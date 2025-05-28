@@ -1,6 +1,6 @@
 package com.example.studify.di
 
-import android.content.Context
+import android.app.Application
 import androidx.room.Room
 import com.example.studify.data.local.dao.StudySessionDao
 import com.example.studify.data.local.db.StudifyDatabase
@@ -10,7 +10,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import jakarta.inject.Singleton
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -18,9 +18,9 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(appContext: Context): StudifyDatabase {
+    fun provideDatabase(app: Application): StudifyDatabase {
         return Room.databaseBuilder(
-            appContext,
+            app,
             StudifyDatabase::class.java,
             "studify_database"
         ).build()
