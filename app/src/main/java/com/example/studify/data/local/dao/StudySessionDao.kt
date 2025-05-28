@@ -29,4 +29,7 @@ interface StudySessionDao {
 
     @Query("DELETE FROM study_sessions")
     suspend fun clearAll()
+
+    @Query("DELETE FROM study_sessions WHERE id = :id")
+    suspend fun deleteSessionById(id: Int)
 }
