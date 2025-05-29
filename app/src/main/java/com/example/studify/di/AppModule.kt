@@ -15,14 +15,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
     @Provides
     @Singleton
     fun provideDatabase(app: Application): StudifyDatabase {
         return Room.databaseBuilder(
             app,
             StudifyDatabase::class.java,
-            "studify_database"
+            "studify_database",
         ).build()
     }
 
