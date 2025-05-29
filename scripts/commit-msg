@@ -1,0 +1,13 @@
+#!/bin/sh
+
+commit_msg_file="$1"
+commit_msg=$(cat "$commit_msg_file")
+
+# Conventional Commits 형식 검사 (예: feat: xxx)
+conventional_regex="^(feat|fix|chore|docs|style|refactor|test|perf|build)(\\(.+\\))?: .+"
+
+if ! echo "$commit_msg" | grep -qE "$conventional_regex"; then
+  echo "❌ 커밋 메시지가 Conventional Commits 형식이 아닙니다."
+  echo "   예: feat: 로그인 기능 추가"
+  exit 1
+fi
