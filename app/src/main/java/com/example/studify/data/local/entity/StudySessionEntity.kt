@@ -6,10 +6,10 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "study_sessions")
 data class StudySessionEntity(
     val subject: String,
-    val date: String,       // yyyy-MM-dd
-    val startTime: String,  // HH:mm
-    val endTime: String,    // HH:mm
-    val examDate: String,   // yyyy-MM-dd
+    val date: String,
+    val startTime: String,
+    val endTime: String,
+    val examDate: String,
     val calendarEventId: String? = null,
-    @PrimaryKey(autoGenerate = true) val id: Int = 0
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
 )

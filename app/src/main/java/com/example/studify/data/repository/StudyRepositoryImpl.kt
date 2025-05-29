@@ -9,9 +9,8 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 class StudyRepositoryImpl(
-    private val dao: StudySessionDao
+    private val dao: StudySessionDao,
 ) : StudyRepository {
-
     override fun getAllSessions(): Flow<List<StudySession>> {
         return dao.getAllSessions().map { list ->
             list.map { it.toDomainModel() }
@@ -28,10 +27,14 @@ class StudyRepositoryImpl(
         // TODO: Google Calendar 이벤트 삭제도 함께
     }
 
-    override suspend fun updateCalendarEventId(sessionId: Int, calendarEventId: String) {
-        val all = dao.getAllSessions()
-            .map { list -> list.find { it.id == sessionId } }
-            .firstOrNull()
+    override suspend fun updateCalendarEventId(
+        sessionId: Int,
+        calendarEventId: String,
+    ) {
+        val all =
+            dao.getAllSessions()
+                .map { list -> list.find { it.id == sessionId } }
+                .firstOrNull()
 
         all?.let {
             val updated = it.copy(calendarEventId = calendarEventId)
@@ -45,23 +48,25 @@ class StudyRepositoryImpl(
 
     // --- 매핑 함수들 ---
 
-    private fun StudySessionEntity.toDomainModel() = StudySession(
-        id = id,
-        subject = subject,
-        date = date,
-        startTime = startTime,
-        endTime = endTime,
-        examDate = examDate,
-        calendarEventId = calendarEventId
-    )
+    private fun StudySessionEntity.toDomainModel() =
+        StudySession(
+            id = id,
+            subject = subject,
+            date = date,
+            startTime = startTime,
+            endTime = endTime,
+            examDate = examDate,
+            calendarEventId = calendarEventId,
+        )
 
-    private fun StudySession.toEntity() = StudySessionEntity(
-        id = id,
-        subject = subject,
-        date = date,
-        startTime = startTime,
-        endTime = endTime,
-        examDate = examDate,
-        calendarEventId = calendarEventId
-    )
+    private fun StudySession.toEntity() =
+        StudySessionEntity(
+            id = id,
+            subject = subject,
+            date = date,
+            startTime = startTime,
+            endTime = endTime,
+            examDate = examDate,
+            calendarEventId = calendarEventId,
+        )
 }

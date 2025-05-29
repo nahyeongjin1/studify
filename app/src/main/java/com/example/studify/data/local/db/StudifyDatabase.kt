@@ -8,7 +8,7 @@ import com.example.studify.data.local.entity.StudySessionEntity
 @Database(
     entities = [StudySessionEntity::class],
     version = 1,
-    exportSchema = false
+    exportSchema = false,
 )
 abstract class StudifyDatabase : RoomDatabase() {
     abstract fun studySessionDao(): StudySessionDao
