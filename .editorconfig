@@ -21,3 +21,6 @@ ktlint_standard_no-wildcard-imports = disabled
 
 [src/test/java/**/*.kt]
 ktlint_standard_no-wildcard-imports = disabled
+
+[*.sh]
+end_of_line = unset
