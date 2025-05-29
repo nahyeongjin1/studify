@@ -4,7 +4,6 @@ import com.example.studify.domain.model.StudySession
 import kotlinx.coroutines.flow.Flow
 
 interface StudyRepository {
-
     /**
      * 로컬 DB에 저장된 모든 공부 세션을 스트리밍 방식으로 가져옴
      */
@@ -28,7 +27,10 @@ interface StudyRepository {
      * Google Calendar 이벤트 ID를 저장
      * - sessionId 기준으로 업데이트
      */
-    suspend fun updateCalendarEventId(sessionId: Int, calendarEventId: String)
+    suspend fun updateCalendarEventId(
+        sessionId: Int,
+        calendarEventId: String,
+    )
 
     /**
      * 이미 존재하는 세션을 Google Calendar에 동기화 (수동 동기화)
