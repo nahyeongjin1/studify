@@ -12,40 +12,44 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class StudyViewModel @Inject constructor(
-    private val repository: StudyRepository
-) : ViewModel() {
+class StudyViewModel
+    @Inject
+    constructor(
+        private val repository: StudyRepository,
+    ) : ViewModel() {
+        // 전체 세션을 state flow로 구독
+        val studySessions: StateFlow<List<StudySession>> =
+            repository.getAllSessions()
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // 전체 세션을 state flow로 구독
-    val studySessions: StateFlow<List<StudySession>> =
-        repository.getAllSessions()
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        // 새로운 세션 추가
+        fun addSession(session: StudySession) {
+            viewModelScope.launch {
+                repository.addSession(session)
+            }
+        }
 
-    // 새로운 세션 추가
-    fun addSession(session: StudySession) {
-        viewModelScope.launch {
-            repository.addSession(session)
+        // 세션 삭제
+        fun deleteSession(sessionId: Int) {
+            viewModelScope.launch {
+                repository.deleteSession(sessionId)
+            }
+        }
+
+        // Calendar ID 업데이트 (예정)
+        fun updateCalendarEventId(
+            sessionId: Int,
+            eventId: String,
+        ) {
+            viewModelScope.launch {
+                repository.updateCalendarEventId(sessionId, eventId)
+            }
+        }
+
+        // 수동 동기화 (예정)
+        fun syncCalendar(session: StudySession) {
+            viewModelScope.launch {
+                repository.syncWithGoogleCalendar(session)
+            }
         }
     }
-
-    // 세션 삭제
-    fun deleteSession(sessionId: Int) {
-        viewModelScope.launch {
-            repository.deleteSession(sessionId)
-        }
-    }
-
-    // Calendar ID 업데이트 (예정)
-    fun updateCalendarEventId(sessionId: Int, eventId: String) {
-        viewModelScope.launch {
-            repository.updateCalendarEventId(sessionId, eventId)
-        }
-    }
-
-    // 수동 동기화 (예정)
-    fun syncCalendar(session: StudySession) {
-        viewModelScope.launch {
-            repository.syncWithGoogleCalendar(session)
-        }
-    }
-}

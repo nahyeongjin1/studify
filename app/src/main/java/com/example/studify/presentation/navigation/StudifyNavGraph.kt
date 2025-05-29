@@ -10,11 +10,11 @@ import androidx.navigation.compose.composable
 @Composable
 fun StudifyNavGraph(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Onboarding.route
+        startDestination = Screen.Onboarding.route,
     ) {
         composable(route = Screen.Onboarding.route) {
             Text("Onboarding Screen")
