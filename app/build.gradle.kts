@@ -4,6 +4,18 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.hilt.plugin)
+    alias(libs.plugins.ktlint)
+}
+
+ktlint {
+    android.set(true)
+    outputToConsole.set(true)
+    ignoreFailures.set(false)
+    filter {
+        exclude("**/*.md")
+        exclude("**/src/androidTest/**")
+        exclude("**/src/test/**")
+    }
 }
 
 android {
@@ -25,7 +37,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
