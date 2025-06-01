@@ -52,6 +52,17 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        resources {
+            pickFirsts += listOf(
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt"
+            )
+        }
+    }
 }
 
 dependencies {
