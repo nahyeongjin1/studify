@@ -6,6 +6,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.studify.presentation.login.LoginScreen
+import com.example.studify.presentation.onboarding.OnboardingScreen
+import com.example.studify.presentation.splash.SplashRoute
 
 @Composable
 fun StudifyNavGraph(
@@ -14,13 +17,25 @@ fun StudifyNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Onboarding.route,
+        startDestination = Screen.Splash.route,
+        modifier = modifier
     ) {
+        composable(Screen.Splash.route) { SplashRoute(navController) }
         composable(route = Screen.Onboarding.route) {
-            Text("Onboarding Screen")
+            OnboardingScreen(
+                onFinish = {
+//                    val vm: OnboardingPrefs = hiltViewModel()
+//                    LaunchedEffect(Unit) { vm.setSeen() }
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Onboarding.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
         }
         composable(route = Screen.Login.route) {
-            Text("Login Screen")
+            LoginScreen(navController)
         }
         composable(route = Screen.Home.route) {
             Text("Home Screen")
