@@ -13,21 +13,23 @@ import kotlinx.coroutines.flow.map
 private val Context.dataStore by preferencesDataStore(name = "settings")
 
 @Singleton
-class OnboardingPrefs @Inject constructor(
-    @ApplicationContext private val ctx: Context
-) {
+class OnboardingPrefs
+    @Inject
+    constructor(
+        @ApplicationContext private val ctx: Context
+    ) {
+        private object Keys {
+            val SEEN = booleanPreferencesKey("onboarding_seen")
+        }
 
-    private object Keys {
-        val SEEN = booleanPreferencesKey("onboarding_seen")
-    }
+        val seenFlow: Flow<Boolean> =
+            ctx.dataStore.data.map { prefs ->
+                prefs[Keys.SEEN] == true
+            }
 
-    val seenFlow: Flow<Boolean> = ctx.dataStore.data.map { prefs ->
-        prefs[Keys.SEEN] == true
-    }
-
-    suspend fun setSeen() {
-        ctx.dataStore.edit { prefs ->
-            prefs[Keys.SEEN] = true
+        suspend fun setSeen() {
+            ctx.dataStore.edit { prefs ->
+                prefs[Keys.SEEN] = true
+            }
         }
     }
-}

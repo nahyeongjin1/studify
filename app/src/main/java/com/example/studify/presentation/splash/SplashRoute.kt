@@ -17,19 +17,25 @@ import com.example.studify.presentation.viewmodel.SplashViewModel
 import com.example.studify.presentation.viewmodel.SplashViewModel.StartDest
 
 @Composable
-fun SplashRoute(navController: NavHostController, vm: SplashViewModel = hiltViewModel()) {
+fun SplashRoute(
+    navController: NavHostController,
+    vm: SplashViewModel = hiltViewModel()
+) {
     val dest by vm.startDestination.collectAsState()
     LaunchedEffect(dest) {
         when (dest) {
-            StartDest.Onboarding -> navController.navigate(Screen.Onboarding.route) {
-                popUpTo(Screen.Splash.route) { inclusive = true }
-            }
-            StartDest.Login      -> navController.navigate(Screen.Login.route) {
-                popUpTo(Screen.Splash.route) { inclusive = true }
-            }
-            StartDest.Home       -> navController.navigate(Screen.Home.route) {
-                popUpTo(Screen.Splash.route) { inclusive = true }
-            }
+            StartDest.Onboarding ->
+                navController.navigate(Screen.Onboarding.route) {
+                    popUpTo(Screen.Splash.route) { inclusive = true }
+                }
+            StartDest.Login ->
+                navController.navigate(Screen.Login.route) {
+                    popUpTo(Screen.Splash.route) { inclusive = true }
+                }
+            StartDest.Home ->
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(Screen.Splash.route) { inclusive = true }
+                }
         }
     }
     // 간단한 로고 또는 로딩 인디케이터

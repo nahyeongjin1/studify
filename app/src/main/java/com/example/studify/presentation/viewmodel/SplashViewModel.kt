@@ -12,23 +12,28 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 @HiltViewModel
-class SplashViewModel @Inject constructor(
-    onboardingPrefs: OnboardingPrefs
-) : ViewModel() {
-    sealed interface StartDest {
-        data object Onboarding : StartDest
-        data object Login      : StartDest
-        data object Home       : StartDest
-    }
+class SplashViewModel
+    @Inject
+    constructor(
+        onboardingPrefs: OnboardingPrefs
+    ) : ViewModel() {
+        sealed interface StartDest {
+            data object Onboarding : StartDest
 
-    val startDestination: StateFlow<StartDest> = onboardingPrefs.seenFlow
-        .map { seen ->
-            val loggedIn = FirebaseAuth.getInstance().currentUser != null
-            when {
-                !seen        -> StartDest.Onboarding
-                loggedIn     -> StartDest.Home
-                else         -> StartDest.Login
-            }
+            data object Login : StartDest
+
+            data object Home : StartDest
         }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, StartDest.Login)
-}
+
+        val startDestination: StateFlow<StartDest> =
+            onboardingPrefs.seenFlow
+                .map { seen ->
+                    val loggedIn = FirebaseAuth.getInstance().currentUser != null
+                    when {
+                        !seen -> StartDest.Onboarding
+                        loggedIn -> StartDest.Home
+                        else -> StartDest.Login
+                    }
+                }
+                .stateIn(viewModelScope, SharingStarted.Eagerly, StartDest.Login)
+    }
