@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+set -e
+
+# 포맷 때문에 워킹 트리에 남아 있는 변경이 있는지 확인
+if ! git diff --quiet; then
+  echo "📝  포맷된 코드가 발견돼 commit --amend ..."
+
+  # 트래킹 중인 변경만 추가 — 필요하면 -A 로 바꿔도 됨
+  git add -u
+
+  # 같은 메시지로 훅 재실행 없이 amend
+  git commit --amend --no-edit --no-verify
+  echo "✅  커밋이 자동으로 갱신됐습니다."
+else
+  echo "✅  추가 포맷 없음 (amend 생략)"
+fi
