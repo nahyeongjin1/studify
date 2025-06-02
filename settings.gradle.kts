@@ -21,4 +21,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "Studify"
 include(":app")
- 
