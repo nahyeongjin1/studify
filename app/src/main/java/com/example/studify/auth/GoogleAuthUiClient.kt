@@ -31,7 +31,17 @@ class GoogleAuthUiClient(
     // ---------- 계정 선택 강제 ----------
     suspend fun beginUserSelect(): GetCredentialResponse? =
         try {
-            val request = buildGoogleIdRequest(autoSelect = false)
+            val googleIdOpt =
+                GetGoogleIdOption.Builder()
+                    .setFilterByAuthorizedAccounts(false) // 모든 Google 계정 표시
+                    .setServerClientId(activity.getString(R.string.default_web_client_id))
+                    .build()
+
+            val request =
+                GetCredentialRequest.Builder()
+                    .addCredentialOption(googleIdOpt)
+                    .build()
+
             credentialManager.getCredential(activity, request)
         } catch (e: GetCredentialException) {
             null
