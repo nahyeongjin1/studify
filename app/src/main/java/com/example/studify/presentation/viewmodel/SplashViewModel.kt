@@ -18,6 +18,8 @@ class SplashViewModel
         onboardingPrefs: OnboardingPrefs
     ) : ViewModel() {
         sealed interface StartDest {
+            data object Pending : StartDest
+
             data object Onboarding : StartDest
 
             data object Login : StartDest
@@ -35,5 +37,5 @@ class SplashViewModel
                         else -> StartDest.Login
                     }
                 }
-                .stateIn(viewModelScope, SharingStarted.Eagerly, StartDest.Login)
+                .stateIn(viewModelScope, SharingStarted.Eagerly, StartDest.Pending)
     }

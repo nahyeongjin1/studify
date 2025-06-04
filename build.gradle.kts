@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.ksp) apply false
     alias(libs.plugins.hilt.plugin) apply false
     alias(libs.plugins.ktlint) apply false
+    alias(libs.plugins.google.services) apply false
 }
 
 // Git hook 자동 설치 Task
