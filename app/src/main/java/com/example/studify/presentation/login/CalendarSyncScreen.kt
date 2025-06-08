@@ -3,6 +3,7 @@ package com.example.studify.presentation.login
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -25,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.studify.presentation.navigation.Screen
+import com.example.studify.util.CalendarServiceHelper
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -67,8 +69,15 @@ fun CalendarSyncScreen(navController: NavHostController) {
                     try {
                         val account = task.getResult(ApiException::class.java)
                         // account != null 이면, Calendar 권한 승인 성공
-                        // 이제 account.account (java Account)나 account.serverAuthCode 등을 통해
-                        // 실제 Calendar API 호출용 Credential을 만들 수 있다.
+
+                        // CalenderServiceHelper를 호출하여 Calendar 클라이언트 생성 테스트
+                        try {
+                            val calendarService =
+                                CalendarServiceHelper.getCalendarService(context, account!!)
+                            Log.d("CalendarSyncScreen", "Calendar client 생성 성공: $calendarService")
+                        } catch (t: Throwable) {
+                            Log.e("CalendarSyncScreen", "Calendar client 생성 실패", t)
+                        }
 
                         // *예시: 간단히 Home으로 네비게이트*
                         navController.navigate(Screen.Home.route) {
@@ -77,10 +86,12 @@ fun CalendarSyncScreen(navController: NavHostController) {
                     } catch (e: ApiException) {
                         // 사용자 취소 혹은 권한 거부
                         // TODO: Snackbar나 Toast로 “권한이 필요합니다” 안내
+                        Log.e("CalendarSyncScreen", "GoogleSignInAccount 가져오기 실패", e)
                     }
                 } else {
                     // RESULT_CANCELED (권한 허용 팝업에서 취소한 경우 등)
                     // TODO: 사용자에게 안내 (Snackbar, Toast 등)
+                    Log.d("CalendarSyncScreen", "사용자가 Calendar 권한 요청을 취소했습니다.")
                 }
             }
         )

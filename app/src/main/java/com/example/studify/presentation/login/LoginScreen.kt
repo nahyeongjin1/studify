@@ -2,6 +2,8 @@ package com.example.studify.presentation.login
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -44,18 +46,35 @@ fun LoginScreen(navController: NavHostController) {
     var userSignedIn by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        authClient.beginAutoSignIn()?.let { resp ->
+        Log.d("LoginScreen", ">> beginAutoSignIn() 시도")
+        val resp = authClient.beginAutoSignIn()
+        Log.d("LoginScreen", ">> beginAutoSignIn() 결과: $resp")
+        resp?.let { resp ->
             val result = authClient.firebaseAuthWith(resp)
+            Log.d("LoginScreen", ">> firebaseAuthWith 결과: $result")
             if (result.isSuccess) {
                 // Firebase Auth에 로그인만 완료 -> 캘린더 권한 요청 화면으로 이동
-                autoSignInDone = true
+                Log.d("LoginScreen", ">> 자동 로그인 성공 -> userSignedIn = true")
                 userSignedIn = true
             } else {
                 // 실패한 케이스 (ex. NoCredentialException) -> 버튼으로 재시도 가능
+                Log.d("LoginScreen", ">> 자동 로그인 실패: ${result.exceptionOrNull()}")
                 autoSignInDone = true
             }
         } ?: run {
+            Log.d("LoginScreen", ">> beginAutoSignIn() == null, 자동 로그인 스킵 -> autoSignInDone = true")
             autoSignInDone = true
+        }
+    }
+
+    LaunchedEffect(userSignedIn) {
+        if (userSignedIn) {
+            Log.d("LoginScreen", ">> userSignedIn = true, CalendarSync로 navigate 시도")
+            navController.navigate(Screen.CalendarSync.route) {
+                popUpTo(Screen.Login.route) {
+                    inclusive = true
+                }
+            }
         }
     }
 
@@ -67,35 +86,38 @@ fun LoginScreen(navController: NavHostController) {
                 .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
-        if (!autoSignInDone) {
-            Text("로그인 중...")
-        } else if (userSignedIn) {
-            // 자동 로그인 성공 후 -> 캘린더 권한 요청 버튼만 보여주기
-            Button(onClick = {
-                // [캘린더 동기화 -> 승인] flow를 CalendarSyncScreen에서 처리하도록
-                navController.navigate(Screen.CalendarSync.route) {
-                    popUpTo(Screen.Login.route) { inclusive = true }
-                }
-            }) {
-                Text("Google Calendar 동기화하기")
+        when {
+            // 아직 자동 로그인이 완료되지 않았을 때
+            !autoSignInDone -> {
+                Text("로그인 중...")
             }
-        } else {
-            // One-Tap 실패 / 사용자가 아직 로그인 안 한 경우 -> 로그인 버튼만 노출
-            Button(onClick = {
-                scope.launch {
-                    // 수동 계정 선택 강제 One-Tap
-                    val resp = authClient.beginUserSelect()
-                    if (resp == null) {
-                        // 사용자 취소 or NoCredentialException
-                        // TODO: Toast/snackbar로 "Google 계정을 선택해주세요" 안내
-                        return@launch
+            // 자동 로그인 실패 -> 수동 로그인 버튼 노출
+            else -> {
+                Button(onClick = {
+                    scope.launch {
+                        Log.d("LoginScreen", ">> 수동 로그인 버튼 클릭, beginUserSelect() 호출")
+                        // 수동 계정 선택 강제 One-Tap
+                        val resp = authClient.beginUserSelect()
+                        Log.d("LoginScreen", "beginUserSelect() 결과: $resp")
+                        if (resp == null) {
+                            Log.d("LoginScreen", "사용자가 취소했거나 NoCredential, 토스트 표시")
+                            // 사용자 취소 or NoCredentialException
+                            Toast.makeText(context, "Google 계정을 선택해주세요.", Toast.LENGTH_SHORT).show()
+                            return@launch
+                        }
+                        val loginResult = authClient.firebaseAuthWith(resp)
+                        Log.d("LoginScreen", "수동 로그인 결과: $loginResult")
+                        loginResult.onSuccess {
+                            Log.d("LoginScreen", "수동 로그인 성공 -> userSignedIn = true")
+                            userSignedIn = true
+                        }.onFailure {
+                            Log.d("LoginScreen", "수동 로그인 실패: $it")
+                            Toast.makeText(context, "로그인에 실패했습니다: ${it.message}", Toast.LENGTH_SHORT).show()
+                        }
                     }
-                    authClient.firebaseAuthWith(resp).onSuccess {
-                        userSignedIn = true
-                    }
+                }) {
+                    Text("Google 계정으로 로그인")
                 }
-            }) {
-                Text("Google 계정으로 로그인")
             }
         }
     }
