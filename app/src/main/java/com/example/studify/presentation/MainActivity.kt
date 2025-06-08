@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.studify.presentation.navigation.StudifyNavGraph
+import com.example.studify.presentation.ui.component.BottomNavBar
 import com.example.studify.presentation.ui.theme.StudifyTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,7 +22,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             StudifyTheme {
                 val navController = rememberNavController()
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    bottomBar = { BottomNavBar(navController) },
+                    modifier = Modifier.fillMaxSize()
+                ) { innerPadding ->
                     StudifyNavGraph(
                         navController = navController,
                         modifier = Modifier.padding(innerPadding),
