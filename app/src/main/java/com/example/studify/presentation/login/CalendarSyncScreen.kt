@@ -33,7 +33,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
 import com.google.android.gms.tasks.Task
+import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.CalendarScopes
+import com.google.api.services.calendar.model.Event
+import com.google.api.services.calendar.model.EventDateTime
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.Calendar
 
 @SuppressLint("ContextCastToActivity")
 @Composable
@@ -74,6 +80,31 @@ fun CalendarSyncScreen(navController: NavHostController) {
                         try {
                             val calendarService =
                                 CalendarServiceHelper.getCalendarService(context, account!!)
+
+                            // 더미 이벤트 삽입
+                            coroutineScope.launch(Dispatchers.IO) {
+                                val now = Calendar.getInstance()
+                                val startDateTime = DateTime(now.time)
+
+                                now.add(Calendar.HOUR_OF_DAY, 1)
+                                val endDateTime = DateTime(now.time)
+
+                                val event =
+                                    Event().apply {
+                                        summary = "Studify Test Event"
+                                        description = "Inserted by Studify for sync verification"
+                                        start = EventDateTime().setDateTime(startDateTime)
+                                        end = EventDateTime().setDateTime(endDateTime)
+                                    }
+
+                                runCatching {
+                                    calendarService.events().insert("primary", event).execute()
+                                }.onSuccess {
+                                    Log.d("CalendarSyncScreen", "✅ Event id = ${it.id} 삽입 성공")
+                                }.onFailure {
+                                    Log.e("CalendarSyncScreen", "❌ Event 삽입 실패", it)
+                                }
+                            }
                             Log.d("CalendarSyncScreen", "Calendar client 생성 성공: $calendarService")
                         } catch (t: Throwable) {
                             Log.e("CalendarSyncScreen", "Calendar client 생성 실패", t)
