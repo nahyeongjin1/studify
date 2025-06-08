@@ -7,6 +7,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.studify.presentation.login.CalendarSyncScreen
 import com.example.studify.presentation.login.LoginScreen
 import com.example.studify.presentation.onboarding.OnboardingScreen
 import com.example.studify.presentation.splash.SplashRoute
@@ -38,6 +39,9 @@ fun StudifyNavGraph(
         }
         composable(route = Screen.Login.route) {
             LoginScreen(navController)
+        }
+        composable(route = Screen.CalendarSync.route) {
+            CalendarSyncScreen(navController)
         }
         composable(route = Screen.Home.route) {
             Text("Home Screen")

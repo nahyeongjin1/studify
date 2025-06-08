@@ -7,6 +7,8 @@ sealed class Screen(val route: String) {
 
     object Login : Screen("login")
 
+    object CalendarSync : Screen("calendar_sync")
+
     object Home : Screen("home") // 1
 
     object Plan : Screen("plan") // 2
