@@ -9,13 +9,15 @@ sealed class Screen(val route: String) {
 
     object CalendarSync : Screen("calendar_sync")
 
-    object Home : Screen("home") // 1
+    object Home : Screen("home")
 
-    object Plan : Screen("plan") // 2
+    object Plan : Screen("plan")
 
-    object Timer : Screen("timer") // 3
+    object PlanCreate : Screen("plan_create")
 
-    object Stat : Screen("stat") // 4
+    object Timer : Screen("timer")
+
+    object Stat : Screen("stat")
 
     object Profile : Screen("profile") // 우상단 아이콘 통해 접근
 }
