@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.example.studify.data.local.dao.PlanDao
 import com.example.studify.data.local.dao.StudySessionDao
+import com.example.studify.data.local.dao.SubjectDao
 import com.example.studify.data.local.db.StudifyDatabase
 import com.example.studify.data.repository.FakePlanRepository
 import com.example.studify.data.repository.StudyRepositoryImpl
@@ -44,5 +45,8 @@ abstract class AppModule {
 
         @Provides
         fun providePlanDao(db: StudifyDatabase): PlanDao = db.planDao()
+
+        @Provides
+        fun provideSubjectDao(db: StudifyDatabase): SubjectDao = db.subjectDao()
     }
 }
