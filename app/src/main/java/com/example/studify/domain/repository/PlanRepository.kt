@@ -1,5 +1,6 @@
 package com.example.studify.domain.repository
 
+import com.example.studify.data.local.dao.PlanWithSubjects
 import com.example.studify.data.local.entity.StudyPlanEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -12,6 +13,8 @@ data class SubjectInput(
 
 interface PlanRepository {
     fun observePlans(): Flow<List<StudyPlanEntity>>
+
+    fun observePlansWithSubjects(): Flow<List<PlanWithSubjects>>
 
     suspend fun createPlanWithLLM(inputs: List<SubjectInput>)
 

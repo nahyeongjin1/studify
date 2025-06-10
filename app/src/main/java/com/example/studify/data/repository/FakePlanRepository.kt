@@ -1,6 +1,7 @@
 package com.example.studify.data.repository
 
 import com.example.studify.data.local.dao.PlanDao
+import com.example.studify.data.local.dao.PlanWithSubjects
 import com.example.studify.data.local.entity.StudyPlanEntity
 import com.example.studify.domain.repository.PlanRepository
 import com.example.studify.domain.repository.SubjectInput
@@ -25,6 +26,8 @@ class FakePlanRepository
         }
 
         override fun observePlans(): Flow<List<StudyPlanEntity>> = dao.observePlans()
+
+        override fun observePlansWithSubjects(): Flow<List<PlanWithSubjects>> = dao.observePlansWithSubjects()
 
         override suspend fun createPlanWithLLM(inputs: List<SubjectInput>) {
             // 간단한 더미 계획 2개 저장
