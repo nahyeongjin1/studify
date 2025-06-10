@@ -38,7 +38,9 @@ abstract class AppModule {
                 app,
                 StudifyDatabase::class.java,
                 "studify_database",
-            ).build()
+            )
+                .fallbackToDestructiveMigration(true) // TODO 나중에 Migration 정책 세워야 함. 우선은 그냥 데이터 삭제되도록.
+                .build()
 
         @Provides
         fun provideStudySessionDao(db: StudifyDatabase): StudySessionDao = db.studySessionDao()
