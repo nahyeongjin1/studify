@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import com.example.studify.presentation.login.CalendarSyncScreen
 import com.example.studify.presentation.login.LoginScreen
 import com.example.studify.presentation.onboarding.OnboardingScreen
+import com.example.studify.presentation.plan.PlanCreateScreen
 import com.example.studify.presentation.plan.PlanScreen
 import com.example.studify.presentation.splash.SplashRoute
 import com.example.studify.presentation.viewmodel.OnboardingViewModel
@@ -49,6 +50,9 @@ fun StudifyNavGraph(
         }
         composable(route = Screen.Plan.route) {
             PlanScreen(navController)
+        }
+        composable(route = Screen.PlanCreate.route) {
+            PlanCreateScreen(navController)
         }
         composable(route = Screen.Timer.route) {
             Text("Timer Screen")
