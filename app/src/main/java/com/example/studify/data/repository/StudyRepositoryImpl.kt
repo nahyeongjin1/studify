@@ -23,7 +23,7 @@ class StudyRepositoryImpl
         }
 
         override suspend fun addSession(session: StudySession) {
-            dao.insertSession(session.toEntity())
+            dao.upsert(session.toEntity())
             // TODO: Google Calendar 연동 로직 삽입 예정
         }
 
