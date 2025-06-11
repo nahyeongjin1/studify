@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +31,7 @@ import com.example.studify.data.local.db.CategoryType
 import com.example.studify.presentation.viewmodel.TempSubject
 import java.time.LocalDate
 import java.util.UUID
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +46,7 @@ fun AddSubjectSheet(
     var name by remember { mutableStateOf(initial?.name.orEmpty()) }
     var category by remember { mutableStateOf(initial?.category ?: CategoryType.Major) }
     var credits by remember { mutableIntStateOf(initial?.credits ?: 3) }
-    var importance by remember { mutableStateOf(initial?.importance ?: 5f) }
+    var importance by remember { mutableFloatStateOf(initial?.importance?.toFloat() ?: 5f) }
     var examDate by remember { mutableStateOf(initial?.examDate ?: LocalDate.now()) }
 
     Column(
@@ -83,10 +85,10 @@ fun AddSubjectSheet(
 
         Text("중요도 ${importance.toInt()}")
         Slider(
-            value = importance as Float,
+            value = importance,
             onValueChange = { importance = it },
             valueRange = 1f..10f,
-            steps = 1
+            steps = 8
         )
 
         DatePickerDialog(
@@ -103,7 +105,7 @@ fun AddSubjectSheet(
                         id = initial?.id ?: UUID.randomUUID().mostSignificantBits,
                         name = name,
                         credits = credits,
-                        importance = importance.toInt(),
+                        importance = importance.roundToInt(),
                         category = category,
                         examDate = examDate
                     )
