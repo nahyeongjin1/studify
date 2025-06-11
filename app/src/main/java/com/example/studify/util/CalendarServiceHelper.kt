@@ -5,8 +5,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.json.gson.GsonFactory
+import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.CalendarScopes
+import com.google.api.services.calendar.model.Event
+import com.google.api.services.calendar.model.EventDateTime
+import java.time.OffsetDateTime
 
 object CalendarServiceHelper {
     @JvmStatic
@@ -29,4 +33,22 @@ object CalendarServiceHelper {
             .setApplicationName("Studify")
             .build()
     }
+
+    fun createEvent(
+        context: Context,
+        account: GoogleSignInAccount,
+        title: String,
+        startTime: OffsetDateTime,
+        endTime: OffsetDateTime,
+    ): String? =
+        runCatching {
+            val service = getCalendarService(context, account)
+            val event =
+                Event().apply {
+                    summary = title
+                    start = EventDateTime().setDateTime(DateTime(startTime.toInstant().toEpochMilli()))
+                    end = EventDateTime().setDateTime(DateTime(endTime.toInstant().toEpochMilli()))
+                }
+            service.events().insert("primary", event).execute().id
+        }.getOrNull()
 }
