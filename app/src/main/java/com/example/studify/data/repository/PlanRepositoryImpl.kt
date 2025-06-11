@@ -3,7 +3,6 @@ package com.example.studify.data.repository
 import android.content.Context
 import com.example.studify.BuildConfig
 import com.example.studify.data.local.dao.PlanDao
-import com.example.studify.data.local.dao.PlanWithSubjects
 import com.example.studify.data.local.dao.StudySessionDao
 import com.example.studify.data.local.dao.SubjectDao
 import com.example.studify.data.local.entity.StudyPlanEntity
@@ -16,7 +15,6 @@ import com.example.studify.domain.repository.SubjectInput
 import com.example.studify.util.CalendarServiceHelper
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.flowOf
 import java.time.OffsetDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -32,12 +30,24 @@ class PlanRepositoryImpl
         private val sessionDao: StudySessionDao
     ) : PlanRepository {
         // 아직 미구현
-        override fun observePlans() = flowOf(emptyList<StudyPlanEntity>())
+        override fun observePlans() = planDao.observePlans()
 
-        override fun observePlansWithSubjects() = flowOf(emptyList<PlanWithSubjects>())
+        override fun observePlansWithSubjects() = planDao.observePlansWithSubjects()
 
         override suspend fun createPlanLocal(subjects: List<SubjectInput>) {
-            // no-op
+            val planId = planDao.upsert(StudyPlanEntity())
+            subjects.forEach { s ->
+                subjectDao.upsert(
+                    SubjectEntity(
+                        planId = planId,
+                        name = s.subject,
+                        credits = s.credits,
+                        importance = s.importance,
+                        category = s.category,
+                        examDate = s.examDate.toString()
+                    )
+                )
+            }
         }
 
         override suspend fun createPlanWithLLM(subjects: List<SubjectInput>) {
