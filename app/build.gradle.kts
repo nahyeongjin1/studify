@@ -79,6 +79,8 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.google.http.client.gson)
     implementation(libs.google.http.client.android)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
