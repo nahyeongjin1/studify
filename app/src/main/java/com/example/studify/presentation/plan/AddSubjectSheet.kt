@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -63,6 +66,8 @@ fun AddSubjectSheet(
             initialSelectedDateMillis = examDate.toEpochDay() * 24 * 60 * 60 * 1000
         )
 
+    var creditsExpanded by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier.padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -111,10 +116,33 @@ fun AddSubjectSheet(
         ) {
             Text("학점")
             ExposedDropdownMenuBox(
-                expanded = false,
-                onExpandedChange = {}
+                expanded = creditsExpanded,
+                onExpandedChange = { creditsExpanded = !creditsExpanded }
             ) {
-                Text("$credits")
+                OutlinedTextField(
+                    value = credits.toString(),
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = creditsExpanded) },
+                    modifier =
+                        Modifier
+                            .menuAnchor()
+                            .width(80.dp)
+                )
+                ExposedDropdownMenu(
+                    expanded = creditsExpanded,
+                    onDismissRequest = { creditsExpanded = false }
+                ) {
+                    (1..5).forEach { num ->
+                        DropdownMenuItem(
+                            text = { Text("$num") },
+                            onClick = {
+                                credits = num
+                                creditsExpanded = false
+                            }
+                        )
+                    }
+                }
             }
         }
 
