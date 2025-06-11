@@ -2,6 +2,7 @@ package com.example.studify.presentation.plan
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,8 +12,11 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -69,16 +73,26 @@ fun AddSubjectSheet(
             label = { Text("과목명") }
         )
 
-        OutlinedTextField(
-            value = examDate.toString(),
-            onValueChange = {},
-            readOnly = true,
-            label = { Text("시험 날짜") },
+        Box(
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .clickable { showDatePicker = true }
-        )
+        ) {
+            OutlinedTextField(
+                value = examDate.toString(),
+                onValueChange = {},
+                enabled = false,
+                label = { Text("시험 날짜") },
+                modifier = Modifier.fillMaxWidth(),
+                colors =
+                    OutlinedTextFieldDefaults.colors(
+                        disabledTextColor = LocalContentColor.current,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+            )
+        }
 
         SingleChoiceSegmentedButtonRow {
             CategoryType.values().forEach {
