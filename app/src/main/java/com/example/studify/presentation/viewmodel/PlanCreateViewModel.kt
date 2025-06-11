@@ -6,10 +6,12 @@ import com.example.studify.data.local.db.CategoryType
 import com.example.studify.domain.repository.PlanRepository
 import com.example.studify.domain.repository.SubjectInput
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -22,6 +24,12 @@ data class TempSubject(
     val examDate: LocalDate
 )
 
+sealed interface UiEvent {
+    object Success : UiEvent
+
+    data class Error(val msg: String) : UiEvent
+}
+
 @HiltViewModel
 class PlanCreateViewModel
     @Inject
@@ -31,8 +39,8 @@ class PlanCreateViewModel
         private val _subjects = MutableStateFlow<List<TempSubject>>(emptyList())
         val subjects = _subjects
 
-        private val _done = MutableSharedFlow<Unit>()
-        val done = _done
+        private val _event = MutableSharedFlow<UiEvent>()
+        val event = _event
 
         fun upsert(s: TempSubject) {
             _subjects.update { list ->
@@ -42,17 +50,24 @@ class PlanCreateViewModel
 
         fun savePlan() =
             viewModelScope.launch {
-                val inputs =
-                    _subjects.value.map { s ->
-                        SubjectInput(
-                            subject = s.name,
-                            credits = s.credits,
-                            importance = s.importance,
-                            category = s.category,
-                            examDate = s.examDate,
-                        )
+                val inputs = _subjects.value.map { it.toDomain() }
+
+                try {
+                    withContext(Dispatchers.IO) {
+                        repo.createPlanWithLLM(inputs)
                     }
-                repo.createPlanLocal(inputs)
-                _done.emit(Unit)
+                    _event.emit(UiEvent.Success)
+                } catch (t: Throwable) {
+                    _event.emit(UiEvent.Error(t.message ?: "오류 발생"))
+                }
             }
+
+        private fun TempSubject.toDomain() =
+            SubjectInput(
+                subject = name,
+                credits,
+                importance,
+                category,
+                examDate
+            )
     }
