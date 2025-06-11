@@ -1,11 +1,13 @@
 package com.example.studify.presentation.plan
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -16,6 +18,8 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,6 +53,12 @@ fun AddSubjectSheet(
     var importance by remember { mutableFloatStateOf(initial?.importance?.toFloat() ?: 5f) }
     var examDate by remember { mutableStateOf(initial?.examDate ?: LocalDate.now()) }
 
+    var showDatePicker by remember { mutableStateOf(false) }
+    val dateState =
+        rememberDatePickerState(
+            initialSelectedDateMillis = examDate.toEpochDay() * 24 * 60 * 60 * 1000
+        )
+
     Column(
         modifier = Modifier.padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -57,6 +67,17 @@ fun AddSubjectSheet(
             value = name,
             onValueChange = { name = it },
             label = { Text("과목명") }
+        )
+
+        OutlinedTextField(
+            value = examDate.toString(),
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("시험 날짜") },
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clickable { showDatePicker = true }
         )
 
         SingleChoiceSegmentedButtonRow {
@@ -91,13 +112,6 @@ fun AddSubjectSheet(
             steps = 8
         )
 
-        DatePickerDialog(
-            onDismissRequest = { },
-            confirmButton = { Text("확인") },
-        ) {
-            Text(examDate.toString())
-        }
-
         Button(
             onClick = {
                 onSave(
@@ -113,5 +127,21 @@ fun AddSubjectSheet(
             },
             modifier = Modifier.fillMaxWidth()
         ) { Text("저장") }
+
+        if (showDatePicker) {
+            DatePickerDialog(
+                onDismissRequest = { showDatePicker = false },
+                confirmButton = {
+                    TextButton(onClick = {
+                        dateState.selectedDateMillis?.let {
+                            examDate = LocalDate.ofEpochDay(it / (24 * 60 * 60 * 1000))
+                        }
+                        showDatePicker = false
+                    }) { Text("확인") }
+                }
+            ) {
+                DatePicker(state = dateState)
+            }
+        }
     }
 }
