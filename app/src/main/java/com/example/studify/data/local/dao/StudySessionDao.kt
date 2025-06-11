@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface StudySessionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSession(session: StudySessionEntity)
+    suspend fun upsert(session: StudySessionEntity)
 
     @Update
     suspend fun updateSession(session: StudySessionEntity)
