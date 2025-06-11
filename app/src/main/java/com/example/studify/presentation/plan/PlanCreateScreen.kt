@@ -2,6 +2,7 @@ package com.example.studify.presentation.plan
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -55,7 +56,7 @@ fun PlanCreateScreen(
             FloatingActionButton(onClick = {
                 showSheet =
                     TempSubject(
-                        id = 0L,
+                        id = System.currentTimeMillis(),
                         name = "",
                         credits = 3,
                         importance = 5,
@@ -68,25 +69,34 @@ fun PlanCreateScreen(
         }
     ) { inner ->
         val subjects by vm.subjects.collectAsState()
-        LazyColumn(
-            contentPadding = inner,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(16.dp)
-        ) {
-            items(subjects) { s ->
-                SubjectCard(subject = s, onClick = { showSheet = s })
-            }
-        }
-
-        Button(
-            onClick = {
-                vm.savePlan()
-            },
+        Column(
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-        ) { Text("계획 생성하기") }
+                    .padding(inner)
+                    .fillMaxSize()
+        ) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier =
+                    Modifier
+                        .padding(16.dp)
+                        .weight(1f)
+            ) {
+                items(subjects) { s ->
+                    SubjectCard(subject = s, onClick = { showSheet = s })
+                }
+            }
+
+            Button(
+                onClick = {
+                    vm.savePlan()
+                },
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+            ) { Text("계획 생성하기") }
+        }
     }
 
     showSheet?.let { editing ->
