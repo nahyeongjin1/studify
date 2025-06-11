@@ -6,7 +6,7 @@ import com.example.studify.data.local.dao.PlanDao
 import com.example.studify.data.local.dao.StudySessionDao
 import com.example.studify.data.local.dao.SubjectDao
 import com.example.studify.data.local.db.StudifyDatabase
-import com.example.studify.data.repository.FakePlanRepository
+import com.example.studify.data.repository.PlanRepositoryImpl
 import com.example.studify.data.repository.StudyRepositoryImpl
 import com.example.studify.domain.repository.PlanRepository
 import com.example.studify.domain.repository.StudyRepository
@@ -23,7 +23,7 @@ abstract class AppModule {
     // @Binds
     @Binds
     @Singleton
-    abstract fun bindPlanRepo(impl: FakePlanRepository): PlanRepository
+    abstract fun bindPlanRepo(impl: PlanRepositoryImpl): PlanRepository
 
     @Binds
     @Singleton

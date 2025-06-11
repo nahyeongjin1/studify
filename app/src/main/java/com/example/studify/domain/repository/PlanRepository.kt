@@ -21,7 +21,7 @@ interface PlanRepository {
 
     suspend fun createPlanLocal(subjects: List<SubjectInput>)
 
-    suspend fun createPlanWithLLM(inputs: List<SubjectInput>)
+    suspend fun createPlanWithLLM(subjects: List<SubjectInput>)
 
     suspend fun deletePlan(id: Long)
 }
