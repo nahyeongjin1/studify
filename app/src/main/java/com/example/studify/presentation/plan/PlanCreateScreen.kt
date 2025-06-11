@@ -28,9 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.studify.data.local.db.CategoryType
 import com.example.studify.presentation.navigation.Screen
 import com.example.studify.presentation.viewmodel.PlanCreateViewModel
 import com.example.studify.presentation.viewmodel.TempSubject
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +52,17 @@ fun PlanCreateScreen(
     Scaffold(
         topBar = { TopAppBar(title = { Text("계획 작성") }) },
         floatingActionButton = {
-            FloatingActionButton(onClick = { showSheet = null }) {
+            FloatingActionButton(onClick = {
+                showSheet =
+                    TempSubject(
+                        id = 0L,
+                        name = "",
+                        credits = 3,
+                        importance = 5,
+                        category = CategoryType.Major,
+                        examDate = LocalDate.now()
+                    )
+            }) {
                 Icon(Icons.Default.Add, contentDescription = "과목 추가")
             }
         }
