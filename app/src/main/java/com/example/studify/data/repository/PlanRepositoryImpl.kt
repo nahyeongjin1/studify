@@ -8,12 +8,16 @@ import com.example.studify.data.local.dao.SubjectDao
 import com.example.studify.data.local.entity.StudyPlanEntity
 import com.example.studify.data.local.entity.StudySessionEntity
 import com.example.studify.data.local.entity.SubjectEntity
-import com.example.studify.data.remote.LlmScheduleRequest
+import com.example.studify.data.remote.ChatCompletionRequest
+import com.example.studify.data.remote.LlmScheduleResponse
 import com.example.studify.data.remote.OpenAiService
+import com.example.studify.data.remote.PromptBuilder
 import com.example.studify.domain.repository.PlanRepository
 import com.example.studify.domain.repository.SubjectInput
 import com.example.studify.util.CalendarServiceHelper
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.OffsetDateTime
 import javax.inject.Inject
@@ -51,13 +55,33 @@ class PlanRepositoryImpl
         }
 
         override suspend fun createPlanWithLLM(subjects: List<SubjectInput>) {
-            val account = GoogleSignIn.getLastSignedInAccount(context) ?: error("No Google account")
-            val req = LlmScheduleRequest(subjects)
+            // Google 계정 & bearer
+            val account =
+                GoogleSignIn.getLastSignedInAccount(context)
+                    ?: error("No Google account")
             val bearer = "Bearer ${BuildConfig.OPEN_API_KEY}"
-            val resp = openAi.getSchedule(bearer, req)
 
+            // ChatCompletion 호출
+            val chatReq =
+                ChatCompletionRequest(
+                    messages =
+                        listOf(
+                            PromptBuilder.buildSystem(),
+                            PromptBuilder.buildUser(subjects)
+                        )
+                )
+            val chatRes = openAi.chatCompletion(bearer, chatReq)
+
+            // JSON 텍스트 -> LlmScheduleResponse
+            val scheduleJson = chatRes.choices.first().message.content.trim()
+            val schedule: List<LlmScheduleResponse.LlmSession> =
+                Gson().fromJson(
+                    scheduleJson,
+                    object : TypeToken<List<LlmScheduleResponse.LlmSession>>() {}.type
+                )
+
+            // 새 plan + subject 저장
             val planId = planDao.upsert(StudyPlanEntity())
-
             subjects.forEach { s ->
                 subjectDao.upsert(
                     SubjectEntity(
@@ -71,7 +95,7 @@ class PlanRepositoryImpl
                 )
             }
 
-            resp.schedule.forEach { llm ->
+            schedule.forEach { llm ->
                 val start = OffsetDateTime.parse(llm.start)
                 val end = OffsetDateTime.parse(llm.end)
 
