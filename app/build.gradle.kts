@@ -23,6 +23,10 @@ android {
     namespace = "com.example.studify"
     compileSdk = 35
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.example.studify"
         minSdk = 34
@@ -31,6 +35,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "OPEN_API_KEY",
+            "\"${property("OPEN_API_KEY")}\""
+        )
     }
 
     buildTypes {
