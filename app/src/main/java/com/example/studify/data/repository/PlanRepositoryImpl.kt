@@ -1,5 +1,6 @@
 package com.example.studify.data.repository
 
+import android.content.Context
 import com.example.studify.BuildConfig
 import com.example.studify.data.local.dao.PlanDao
 import com.example.studify.data.local.dao.PlanWithSubjects
@@ -12,6 +13,9 @@ import com.example.studify.data.remote.LlmScheduleRequest
 import com.example.studify.data.remote.OpenAiService
 import com.example.studify.domain.repository.PlanRepository
 import com.example.studify.domain.repository.SubjectInput
+import com.example.studify.util.CalendarServiceHelper
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.flowOf
 import java.time.OffsetDateTime
 import javax.inject.Inject
@@ -21,6 +25,7 @@ import javax.inject.Singleton
 class PlanRepositoryImpl
     @Inject
     constructor(
+        @ApplicationContext private val context: Context,
         private val openAi: OpenAiService,
         private val planDao: PlanDao,
         private val subjectDao: SubjectDao,
@@ -36,6 +41,7 @@ class PlanRepositoryImpl
         }
 
         override suspend fun createPlanWithLLM(subjects: List<SubjectInput>) {
+            val account = GoogleSignIn.getLastSignedInAccount(context) ?: error("No Google account")
             val req = LlmScheduleRequest(subjects)
             val bearer = "Bearer ${BuildConfig.OPEN_API_KEY}"
             val resp = openAi.getSchedule(bearer, req)
@@ -59,6 +65,15 @@ class PlanRepositoryImpl
                 val start = OffsetDateTime.parse(llm.start)
                 val end = OffsetDateTime.parse(llm.end)
 
+                val eventId =
+                    CalendarServiceHelper.createEvent(
+                        context = context,
+                        account = account,
+                        title = llm.subject,
+                        startTime = start,
+                        endTime = end
+                    )
+
                 sessionDao.upsert(
                     StudySessionEntity(
                         planId = planId,
@@ -66,7 +81,8 @@ class PlanRepositoryImpl
                         date = start.toLocalDate().toString(),
                         startTime = start.toLocalTime().toString(),
                         endTime = end.toLocalTime().toString(),
-                        examDate = subjects.first { it.subject == llm.subject }.examDate.toString()
+                        examDate = subjects.first { it.subject == llm.subject }.examDate.toString(),
+                        calendarEventId = eventId
                     )
                 )
             }
