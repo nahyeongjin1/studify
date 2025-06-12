@@ -42,6 +42,9 @@ class PlanCreateViewModel
         private val _event = MutableSharedFlow<UiEvent>()
         val event = _event
 
+        private val _loading = MutableStateFlow(false)
+        val loading = _loading
+
         fun upsert(s: TempSubject) {
             _subjects.update { list ->
                 list.filterNot { it.id == s.id } + s
@@ -51,6 +54,7 @@ class PlanCreateViewModel
         fun savePlan() =
             viewModelScope.launch {
                 val inputs = _subjects.value.map { it.toDomain() }
+                _loading.value = true
 
                 try {
                     withContext(Dispatchers.IO) {
@@ -59,6 +63,8 @@ class PlanCreateViewModel
                     _event.emit(UiEvent.Success)
                 } catch (t: Throwable) {
                     _event.emit(UiEvent.Error(t.message ?: "오류 발생"))
+                } finally {
+                    _loading.value = false
                 }
             }
 
