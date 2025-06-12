@@ -1,6 +1,7 @@
 package com.example.studify.presentation.plan
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +23,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,10 +59,7 @@ fun PlanCreateScreen(
         }
     }
 
-    var isLoading by remember { mutableStateOf(false) }
-    LaunchedEffect(event) {
-        isLoading = event is UiEvent? && event !is UiEvent.Error
-    }
+    val loading by vm.loading.collectAsState()
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("계획 작성") }) },
@@ -124,9 +121,13 @@ fun PlanCreateScreen(
         )
     }
 
-    if (isLoading) {
+    // 화면 맨 위에 덮어서 보여주기
+    if (loading) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f)),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
