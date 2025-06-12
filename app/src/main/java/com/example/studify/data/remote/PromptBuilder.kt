@@ -15,18 +15,29 @@ object PromptBuilder {
           • start    – ISO-8601 date-time with offset(+09:00)  
           • end      – ISO-8601 date-time with offset(+09:00)
 
-        ◎ CONSTRAINTS
+        ◎ PLANNING RULES
         1. Today is ${LocalDate.now()}(KST).  
-           - All sessions must start **after the current time**.  
-        2. Work-hours: 09:00 – 23:30, 30-minute grid.  
-           - No sessions at 12:00-13:00 (lunch) or 18:00-19:00 (dinner).  
-        3. On any subject’s `examDate` create **no sessions**.  
-        4. Each subject needs **multiple daily sessions** proportionally:  
-           weight = credits × importance × categoryWeight  
-           - categoryWeight: Major = 2, General = 1  
-           Distribute weights so that heavier subjects get more 30-minute slots.  
-        5. Start times on the hour (09:00, 10:00 …), end time = start+30 min, 1 h, 1.5 h…  
-        6. Schedule until the latest examDate.
+           - Every session must start **after the current time**.
+           - Generate sessions **every day up to each subject's examDate** (inclusive-1). 
+        
+        2. Daily working window: **09:00 - 23:30**  
+           - No sessions at 12:00-13:00 (lunch) or 18:00-19:00 (dinner).
+        
+        3. **Never create sessions on a subject's own examDate**.
+        
+        4. Slot length = 30 min × N (N ∈ {1,2,3…}).  
+           - **Merge consecutive slots of the same subject** into one JSON item  
+             (e.g. 09:00-10:30, not four 30-min slices).  
+           - Start times must fall on **:00 or :30** exactly.
+        
+        5. Allocate study quota *proportionally* each day:  
+            `quota = credits × importance × categoryWeight × daysUntilExam⁻¹`  
+            where categoryWeight = 2 (Major) or 1 (General).
+
+        6. **Total sessions per day ≤ 10** to keep output compact.  
+            If more time is needed, extend to additional days rather than over-crowding a day.
+          
+        7. Schedule until the latest examDate.
         """.trimIndent()
 
     fun buildSystem() = ChatMessage("system", system)
