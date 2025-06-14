@@ -15,6 +15,7 @@ fun StudifyNavGraph(
     NavHost(
         navController = navController,
         startDestination = Screen.Onboarding.route,
+        modifier = modifier
     ) {
         composable(route = Screen.Onboarding.route) {
             Text("Onboarding Screen")
@@ -23,19 +24,19 @@ fun StudifyNavGraph(
             Text("Login Screen")
         }
         composable(route = Screen.Home.route) {
-            Text("Home Screen")
+            Text("\uD83C\uDFE0 Home Screen")
         }
         composable(route = Screen.Plan.route) {
-            Text("Plan Screen")
+            Text("\uD83D\uDDD3\uFE0F Plan Screen")
         }
         composable(route = Screen.Timer.route) {
-            Text("Timer Screen")
+            Text("⏱\uFE0F Timer Screen")
         }
         composable(route = Screen.Stat.route) {
-            Text("Statistics Screen")
+            Text("\uD83D\uDCCA Statistics Screen")
         }
         composable(route = Screen.Profile.route) {
-            Text("Profile Screen")
+            Text("\uD83D\uDC64 Profile Screen")
         }
     }
 }
