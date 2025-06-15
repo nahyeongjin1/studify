@@ -1,2 +1,4 @@
-# 쉘 스크립트만 LF 고정
 *.sh text eol=lf
+*.kt   text eol=lf
+*.kts  text eol=lf
+scripts/**    text eol=lf

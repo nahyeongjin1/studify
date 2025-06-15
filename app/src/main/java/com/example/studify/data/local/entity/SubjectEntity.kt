@@ -4,9 +4,11 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.example.studify.data.local.db.CategoryType
 
 @Entity(
-    tableName = "study_sessions",
+    tableName = "subjects",
+    indices = [Index("planId")],
     foreignKeys = [
         ForeignKey(
             entity = StudyPlanEntity::class,
@@ -14,16 +16,14 @@ import androidx.room.PrimaryKey
             childColumns = ["planId"],
             onDelete = ForeignKey.CASCADE
         )
-    ],
-    indices = [Index("planId")]
+    ]
 )
-data class StudySessionEntity(
-    val planId: Long = 0,
-    val subject: String,
-    val date: String,
-    val startTime: String,
-    val endTime: String,
+data class SubjectEntity(
+    val planId: Long,
+    val name: String,
+    val credits: Int,
+    val importance: Int = 5,
+    val category: CategoryType = CategoryType.Major,
     val examDate: String,
-    val calendarEventId: String? = null,
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
 )

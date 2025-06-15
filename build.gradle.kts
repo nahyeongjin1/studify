@@ -6,16 +6,18 @@ plugins {
     alias(libs.plugins.kotlin.ksp) apply false
     alias(libs.plugins.hilt.plugin) apply false
     alias(libs.plugins.ktlint) apply false
+    alias(libs.plugins.google.services) apply false
 }
 
 // Git hook 자동 설치 Task
 tasks.register("installGitHook", Copy::class) {
     from("scripts") {
-        include("pre-commit", "commit-msg")
+        include("pre-commit", "commit-msg", "post-commit")
     }
-    into(file(".git/hooks"))
+    into(rootProject.file(".git/hooks"))
     doLast {
-        file(".git/hooks/pre-commit").setExecutable(true, false)
-        file(".git/hooks/commit-msg").setExecutable(true, false)
+        listOf("pre-commit", "commit-msg", "post-commit").forEach { hook ->
+            file(".git/hooks/$hook").setExecutable(true, false)
+        }
     }
 }

@@ -1,12 +1,9 @@
-#!/bin/sh
-echo "✅ Running ktlintFormat..."
-./gradlew ktlintFormat
+#!/usr/bin/env sh
+set -e        # 첫 실패 즉시 스크립트 중단
 
-echo "✅ Running ktlintCheck..."
-./gradlew ktlintCheck
+echo "✅  Running ktlintFormat..."
+./gradlew ktlintFormat -q
+git add -u
 
-# ✅ 실패 시 커밋 중단
-if [ $? -ne 0 ]; then
-  echo "❌ ktlint check failed. Commit aborted."
-  exit 1
-fi
+echo "✅  Running ktlintCheck..."
+./gradlew ktlintCheck -q
