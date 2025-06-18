@@ -13,8 +13,6 @@ sealed class Screen(val route: String) {
 
     object Plan : Screen("plan")
 
-    object PlanCreate : Screen("plan_create")
-
     object Timer : Screen("timer")
 
     object Stat : Screen("stat")
