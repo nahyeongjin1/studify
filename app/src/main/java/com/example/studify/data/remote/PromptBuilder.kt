@@ -21,15 +21,13 @@ object PromptBuilder {
            - Generate sessions **every day up to each subject's examDate** (inclusive-1). 
         
         2. Daily working window: **09:00 - 23:30**  
-           - No sessions at 12:00-13:00 (lunch) or 18:00-19:00 (dinner).
+            - No sessions at 12:00-13:00 (lunch) or 18:00-19:00 (dinner).
         
         3. **Never create sessions on a subject's own examDate**.
         
-        4. Slot length = 30 min × N (N ∈ {1,2,3…}).  
-           - **Merge consecutive slots of the same subject** into one JSON item  
-             (e.g. 09:00-10:30, not four 30-min slices).  
-           - Start times must fall on **:00 or :30** exactly.
-        
+        4. **Every session must be exactly 1 hour** (e.g. 09:00-10:00).
+            - Start times must fall on **:00** only.
+            
         5. Allocate study quota *proportionally* each day:  
             `quota = credits × importance × categoryWeight × daysUntilExam⁻¹`  
             where categoryWeight = 2 (Major) or 1 (General).
