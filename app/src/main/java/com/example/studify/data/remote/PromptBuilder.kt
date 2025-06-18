@@ -33,10 +33,14 @@ object PromptBuilder {
         5. Allocate study quota *proportionally* each day:  
             `quota = credits × importance × categoryWeight × daysUntilExam⁻¹`  
             where categoryWeight = 2 (Major) or 1 (General).
-            **Example*:
-            - Subject A (3 cr x 3 importance x 2) = 18
-            - Subject B (2 cr x 1 importance x 1) = 2
-            -> Subject A : Subject B daily time = **9 : 1**
+            
+            **Example (daily target with 3 subjects)**  
+            | subject | quota | daily hrs |  
+            |---------|-------|-----------|  
+            | A       | 18    | 3 h       |  
+            | B       |  6    | 1 h       |  
+            | C       |  6    | 1 h       |  
+            The JSON should reflect these **3 : 1 : 1** proportions.
 
         6. **Total sessions per day ≤ 10** to keep output compact.  
             If more time is needed, extend to additional days rather than over-crowding a day.
