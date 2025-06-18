@@ -190,12 +190,16 @@ private fun validateAndRebalance(
             max(1, (w * totalSessions / totalWeight.toDouble()).roundToInt())
         }
 
-    // 시험일과 겹치는 세션 제거
+    // 시험일이 지난 & 금지 시각 (12:00, 18:00) 세션 제거
     val examDateMap = subjects.associate { it.subject to it.examDate }
+    val forbiddenStarts = setOf("12:00", "18:00")
     val filtered =
         sessions.filterNot { sess ->
-            val exam = examDateMap[sess.subject] ?: return@filterNot false
-            OffsetDateTime.parse(sess.start).toLocalDate().toString() == exam.toString()
+            val startTs = OffsetDateTime.parse(sess.start)
+            val exam = examDateMap[sess.subject]
+            val isOnOrAfterExam = exam != null && startTs.toLocalDate() >= exam
+            val isForbiddenTime = startTs.toLocalTime().toString().substring(0, 5) in forbiddenStarts
+            isOnOrAfterExam || isForbiddenTime
         }
 
     val bySubj = filtered.groupBy { it.subject }
