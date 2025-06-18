@@ -24,7 +24,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
@@ -44,6 +43,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.studify.R
 import com.example.studify.data.local.db.CategoryType
 import com.example.studify.presentation.navigation.Screen
 import com.example.studify.presentation.viewmodel.PlanCreateViewModel
@@ -194,7 +199,14 @@ private fun LoaderOverlay() =
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f)),
         contentAlignment = Alignment.Center
-    ) { CircularProgressIndicator() }
+    ) {
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.plan_loading))
+        val progress by animateLottieCompositionAsState(
+            composition = composition,
+            iterations = LottieConstants.IterateForever
+        )
+        LottieAnimation(composition, progress)
+    }
 
 @Composable
 private fun SubjectCard(

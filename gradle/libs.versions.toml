@@ -32,6 +32,7 @@ googleHttpClientGson = "1.47.0"
 googleHttpClientAndroid = "1.47.0"
 retrofit = "3.0.0"
 converterGson = "3.0.0"
+lottieCompose = "6.6.6"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -72,6 +73,7 @@ google-http-client-gson = { group = "com.google.http-client", name = "google-htt
 google-http-client-android = { group = "com.google.http-client", name = "google-http-client-android", version.ref = "googleHttpClientAndroid" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "converterGson" }
+lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottieCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

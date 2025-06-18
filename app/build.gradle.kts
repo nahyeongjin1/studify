@@ -91,6 +91,7 @@ dependencies {
     implementation(libs.google.http.client.android)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation(libs.lottie.compose)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
