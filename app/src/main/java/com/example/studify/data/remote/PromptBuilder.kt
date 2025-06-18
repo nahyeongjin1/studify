@@ -16,9 +16,9 @@ object PromptBuilder {
           • end      – ISO-8601 date-time with offset(+09:00)
 
         ◎ PLANNING RULES
-        1. Today is ${LocalDate.now()}(KST).  
-           - Every session must start **after the current time**.
-           - Generate sessions **every day up to each subject's examDate** (inclusive-1). 
+        1. Today is ${LocalDate.now()}(KST).
+            - Every session must start **after the current time**.
+            - Generate sessions **every day up to each subject's examDate** (inclusive-1). 
         
         2. Daily working window: **09:00 - 23:30**  
             - No sessions at 12:00-13:00 (lunch) or 18:00-19:00 (dinner).
@@ -38,6 +38,12 @@ object PromptBuilder {
             If more time is needed, extend to additional days rather than over-crowding a day.
           
         7. Schedule until the latest examDate.
+        
+        8. Distribute sessions *across all subjects* each day.
+            - A single subject may take **max 4 sessions/day**
+            - Mix different subjects chronologically.
+            
+        9. Each subject must appear at least once every two days until its examDate.
         """.trimIndent()
 
     fun buildSystem() = ChatMessage("system", system)
