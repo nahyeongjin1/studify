@@ -1,6 +1,7 @@
 package com.example.studify.presentation.plan
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,7 +20,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -42,6 +47,7 @@ import com.example.studify.presentation.viewmodel.TempSubject
 import com.example.studify.presentation.viewmodel.UiEvent
 import java.time.LocalDate
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlanScreen(
     navController: NavHostController,
@@ -64,35 +70,53 @@ fun PlanScreen(
         }
     }
 
-    Scaffold { inner ->
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(title = { Text("계획 작성") })
+        }
+    ) { inner ->
         Column(
             modifier =
                 Modifier
                     .padding(inner)
                     .fillMaxSize()
         ) {
+            val cardHeight = 96.dp
+
+            AddSubjectCard(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(cardHeight)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                onClick = {
+                    showSheet =
+                        TempSubject(
+                            id = System.currentTimeMillis(),
+                            name = "",
+                            credits = 3,
+                            importance = 5,
+                            category = CategoryType.Major,
+                            examDate = LocalDate.now()
+                        )
+                }
+            )
+
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier =
                     Modifier
-                        .padding(16.dp)
+                        .padding(horizontal = 16.dp)
                         .weight(1f)
             ) {
-                item {
-                    AddSubjectCard {
-                        showSheet =
-                            TempSubject(
-                                id = System.currentTimeMillis(),
-                                name = "",
-                                credits = 3,
-                                importance = 5,
-                                category = CategoryType.Major,
-                                examDate = LocalDate.now()
-                            )
-                    }
-                }
                 items(subjects, key = { it.id }) { s ->
-                    SubjectCard(subject = s) { showSheet = s }
+                    SubjectCard(
+                        subject = s,
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(cardHeight)
+                    ) { showSheet = s }
                 }
             }
 
@@ -125,23 +149,27 @@ fun PlanScreen(
 }
 
 @Composable
-private fun AddSubjectCard(onClick: () -> Unit) =
-    Card(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onClick)
+private fun AddSubjectCard(
+    modifier: Modifier,
+    onClick: () -> Unit
+) = Card(
+    modifier = modifier.clickable(onClick = onClick),
+    colors =
+        CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+) {
+    Row(
+        modifier = Modifier.fillMaxSize(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
     ) {
-        Row(
-            modifier = Modifier.padding(24.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Icon(Icons.Default.Add, null)
-            Spacer(Modifier.width(8.dp))
-            Text("과목 추가", style = MaterialTheme.typography.titleMedium)
-        }
+        Icon(Icons.Default.Add, null)
+        Spacer(Modifier.width(6.dp))
+        Text("과목 추가", style = MaterialTheme.typography.titleMedium)
     }
+}
 
 @Composable
 private fun LoaderOverlay() =
@@ -155,10 +183,11 @@ private fun LoaderOverlay() =
 
 @Composable
 private fun SubjectCard(
+    modifier: Modifier,
     subject: TempSubject,
     onClick: () -> Unit
 ) = Card(onClick) {
-    Column(Modifier.padding(16.dp)) {
+    Column(modifier = modifier.padding(16.dp)) {
         Text(subject.name, style = MaterialTheme.typography.titleMedium)
         Text("학점 ${subject.credits} · 중요도 ${subject.importance}")
         Text("${subject.category.label} / 시험 ${subject.examDate}")
