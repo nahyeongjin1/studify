@@ -20,8 +20,8 @@ object PromptBuilder {
             - Every session must start **after the current time**.
             - Generate sessions **every day up to each subject's examDate** (inclusive-1). 
         
-        2. Daily working window: **09:00 - 23:30**  
-            - No sessions at 12:00-13:00 (lunch) or 18:00-19:00 (dinner).
+        2. Daily working window: **09:00 - 23:30**
+            - Start times **must NOT be 12:00 or 18:00** (lunch/dinner breaks).
         
         3. **Never create sessions on a subject's own examDate**.
         
