@@ -70,6 +70,13 @@ class PlanRepositoryImpl
                         ?: error("No Google account")
                 val bearer = "Bearer ${BuildConfig.OPEN_API_KEY}"
 
+                // 기존 이벤트 삭제 (지나간 일정은 보존)
+                CalendarServiceHelper.purgeStudyEvents(
+                    context = context,
+                    account = account,
+                    from = OffsetDateTime.now()
+                )
+
                 // ChatCompletion 호출
                 val chatReq =
                     ChatCompletionRequest(

@@ -45,10 +45,25 @@ object CalendarServiceHelper {
             val service = getCalendarService(context, account)
             val event =
                 Event().apply {
-                    summary = title
+                    summary = "[Studify] $title"
                     start = EventDateTime().setDateTime(DateTime(startTime.toInstant().toEpochMilli()))
                     end = EventDateTime().setDateTime(DateTime(endTime.toInstant().toEpochMilli()))
                 }
             service.events().insert("primary", event).execute().id
         }.getOrNull()
+
+    fun purgeStudyEvents(
+        context: Context,
+        account: GoogleSignInAccount,
+        from: OffsetDateTime,
+    ) {
+        val service = getCalendarService(context, account)
+        val events =
+            service.events().list("primary")
+                .setTimeMin(DateTime(from.toInstant().toEpochMilli()))
+                .setQ("[Studify]")
+                .execute()
+                .items
+        events.forEach { service.events().delete("primary", it.id).execute() }
+    }
 }
