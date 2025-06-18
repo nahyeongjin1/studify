@@ -27,6 +27,8 @@ object PromptBuilder {
         
         4. **Every session must be exactly 1 hour** (e.g. 09:00-10:00).
             - Start times must fall on **:00** only.
+            - 'start' and 'end' MUST include the `+09:00` timezone offset
+            (ISO-8601 with offset), e.g. `2025-06-20T09:00:00+09:00`.
             
         5. Allocate study quota *proportionally* each day:  
             `quota = credits × importance × categoryWeight × daysUntilExam⁻¹`  
