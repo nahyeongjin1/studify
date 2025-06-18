@@ -51,6 +51,12 @@ class PlanCreateViewModel
             }
         }
 
+        fun delete(id: Long) {
+            _subjects.update { list ->
+                list.filterNot { it.id == id }
+            }
+        }
+
         fun savePlan() =
             viewModelScope.launch {
                 val inputs = _subjects.value.map { it.toDomain() }
