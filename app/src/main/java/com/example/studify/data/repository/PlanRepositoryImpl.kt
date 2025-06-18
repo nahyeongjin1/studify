@@ -79,6 +79,7 @@ class PlanRepositoryImpl
 
                 // JSON 텍스트 -> LlmScheduleResponse
                 val scheduleJson = chatRes.choices.first().message.content.trim()
+                Log.d("LLM", "scheduleJson: $scheduleJson")
                 val schedule: List<LlmScheduleResponse.LlmSession> =
                     run {
                         val clean =
