@@ -183,7 +183,15 @@ private fun validateAndRebalance(
             max(1, (w * totalSessions / totalWeight.toDouble()).roundToInt())
         }
 
-    val bySubj = sessions.groupBy { it.subject }
+    // 시험일과 겹치는 세션 제거
+    val examDateMap = subjects.associate { it.subject to it.examDate }
+    val filtered =
+        sessions.filterNot { sess ->
+            val exam = examDateMap[sess.subject] ?: return@filterNot false
+            OffsetDateTime.parse(sess.start).toLocalDate().toString() == exam.toString()
+        }
+
+    val bySubj = filtered.groupBy { it.subject }
     val imbalanced =
         bySubj.any { (subj, list) ->
             val ratio = list.size.toDouble() / expected.getValue(subj)
@@ -192,12 +200,11 @@ private fun validateAndRebalance(
 
     return if (imbalanced) {
         Log.w("PlanGen", "imbalanced detected -> rebalancing")
-        val queues =
-            bySubj.mapValues { it.value.toMutableList() }.toMutableMap()
+        val queues = bySubj.mapValues { it.value.toMutableList() }.toMutableMap()
         rebalanceByWeight(queues, expected.toMutableMap())
             .sortedBy { it.start }
     } else {
-        sessions
+        filtered
     }
 }
 
