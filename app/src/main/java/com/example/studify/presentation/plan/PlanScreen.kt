@@ -1,7 +1,6 @@
 package com.example.studify.presentation.plan
 
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,21 +8,26 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -72,7 +76,13 @@ fun PlanScreen(
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(title = { Text("계획 작성") })
+            Column {
+                CenterAlignedTopAppBar(
+                    title = { Text("계획 작성") },
+                    windowInsets = WindowInsets(0)
+                )
+                HorizontalDivider()
+            }
         }
     ) { inner ->
         Column(
@@ -121,14 +131,19 @@ fun PlanScreen(
             }
 
             // 하단 버튼
-            Button(
+            FilledTonalButton(
                 onClick = vm::savePlan,
                 enabled = subjects.isNotEmpty(),
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-            ) { Text("계획 생성하기") }
+                        .imePadding()
+            ) {
+                Icon(Icons.AutoMirrored.Filled.Send, null)
+                Spacer(Modifier.width(8.dp))
+                Text("계획 생성하기")
+            }
         }
 
         // 로딩 오버레이
@@ -158,7 +173,7 @@ private fun AddSubjectCard(
         CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    elevation = CardDefaults.elevatedCardElevation(0.dp)
 ) {
     Row(
         modifier = Modifier.fillMaxSize(),
@@ -186,10 +201,28 @@ private fun SubjectCard(
     modifier: Modifier,
     subject: TempSubject,
     onClick: () -> Unit
-) = Card(onClick) {
-    Column(modifier = modifier.padding(16.dp)) {
-        Text(subject.name, style = MaterialTheme.typography.titleMedium)
-        Text("학점 ${subject.credits} · 중요도 ${subject.importance}")
-        Text("${subject.category.label} / 시험 ${subject.examDate}")
+) = Card(
+    onClick = onClick,
+    elevation = CardDefaults.elevatedCardElevation(4.dp)
+) {
+    val categoryColor =
+        if (subject.category == CategoryType.Major) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.secondary
+        }
+    Row(modifier = modifier) {
+        Box(
+            modifier =
+                Modifier
+                    .width(4.dp)
+                    .fillMaxHeight()
+                    .background(categoryColor)
+        )
+        Column(modifier = modifier.padding(16.dp)) {
+            Text(subject.name, style = MaterialTheme.typography.titleMedium)
+            Text("학점 ${subject.credits} · 중요도 ${subject.importance}")
+            Text("${subject.category.label} / 시험 ${subject.examDate}")
+        }
     }
 }
