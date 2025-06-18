@@ -1,6 +1,7 @@
 package com.example.studify.data.repository
 
 import android.content.Context
+import android.util.Log
 import com.example.studify.BuildConfig
 import com.example.studify.data.local.dao.PlanDao
 import com.example.studify.data.local.dao.StudySessionDao
@@ -155,5 +156,6 @@ private fun parseIsoDateTime(str: String): OffsetDateTime {
     if (str.contains('+') || str.endsWith('Z')) return OffsetDateTime.parse(str)
 
     // 없으면 기본 +09:00(한국) 붙이기 - 필요 시 TimeZone 얻어와 동적으로 변환
+    Log.w("PlanParser", "timestamp missing offset -> auto-fixing: $str -> +09:00")
     return OffsetDateTime.parse("$str+09:00")
 }
