@@ -14,6 +14,9 @@ interface StudySessionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(session: StudySessionEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertAll(list: List<StudySessionEntity>)
+
     @Update
     suspend fun updateSession(session: StudySessionEntity)
 
