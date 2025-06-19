@@ -7,13 +7,14 @@ import com.example.studify.data.local.dao.DayGoalDao
 import com.example.studify.data.local.dao.PlanDao
 import com.example.studify.data.local.dao.StudySessionDao
 import com.example.studify.data.local.dao.SubjectDao
+import com.example.studify.data.local.entity.DayGoalEntity
 import com.example.studify.data.local.entity.StudyPlanEntity
 import com.example.studify.data.local.entity.StudySessionEntity
 import com.example.studify.data.local.entity.SubjectEntity
 
 @Database(
-    entities = [StudySessionEntity::class, StudyPlanEntity::class, SubjectEntity::class],
-    version = 2,
+    entities = [StudySessionEntity::class, StudyPlanEntity::class, SubjectEntity::class, DayGoalEntity::class],
+    version = 3,
     exportSchema = false,
 )
 @TypeConverters(DateConverters::class)
