@@ -15,6 +15,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
 @Module
@@ -41,6 +43,9 @@ abstract class AppModule {
             )
                 .fallbackToDestructiveMigration(true) // TODO 나중에 Migration 정책 세워야 함. 우선은 그냥 데이터 삭제되도록.
                 .build()
+
+        @Provides
+        fun provideDatabaseDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
         @Provides
         fun provideStudySessionDao(db: StudifyDatabase): StudySessionDao = db.studySessionDao()
