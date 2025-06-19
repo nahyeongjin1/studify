@@ -9,6 +9,7 @@ import com.example.studify.data.local.dao.StudySessionDao
 import com.example.studify.data.local.dao.SubjectDao
 import com.example.studify.data.local.db.CategoryType
 import com.example.studify.data.local.db.StudifyDatabase
+import com.example.studify.data.local.entity.DayGoalEntity
 import com.example.studify.data.local.entity.StudyPlanEntity
 import com.example.studify.data.local.entity.StudySessionEntity
 import com.example.studify.data.local.entity.SubjectEntity
@@ -100,6 +101,30 @@ class PlanRepositoryImpl
                     account = account,
                     from = OffsetDateTime.now()
                 )
+
+                // 과목별 날짜 횟수 (시간) 셈
+                val groupedByDate: Map<String, Map<String, Int>> =
+                    sessions
+                        .groupBy { session ->
+                            // 날짜만 추출 (YYYY-MM-DD)
+                            OffsetDateTime.parse(session.start).toLocalDate().toString()
+                        }
+                        .mapValues { (_, sessionList) ->
+                            // 날짜에 해당하는 세션들 → 과목별로 그룹화 후 개수 세기
+                            sessionList.groupingBy { it.subject }.eachCount()
+                        }
+
+                groupedByDate.forEach { (date, subjectCounts) ->
+                    subjectCounts.forEach { (subject, count) ->
+                        val entity =
+                            DayGoalEntity(
+                                subject = subject,
+                                hours = count,
+                                date = date
+                            )
+                        db.dayGoalDao().insert(entity)
+                    }
+                }
 
                 // DB & 캘린더 삽입 (한 트랜잭션)
                 runCatching {
