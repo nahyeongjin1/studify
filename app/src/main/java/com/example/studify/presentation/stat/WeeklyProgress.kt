@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.studify.presentation.viewmodel.StatViewModel
 import com.example.studify.presentation.viewmodel.StatViewModel.DailyProgress
-import kotlin.collections.forEach
 
 @Composable
 fun WeeklyProgress(viewModel: StatViewModel = hiltViewModel()) {

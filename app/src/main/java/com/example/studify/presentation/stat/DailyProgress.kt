@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.studify.presentation.viewmodel.StatViewModel
 import java.time.OffsetDateTime
+import java.util.Locale
 
 @Composable
 fun DailyProgress(viewModel: StatViewModel = hiltViewModel()) {
@@ -73,6 +74,7 @@ fun DailyProgress(viewModel: StatViewModel = hiltViewModel()) {
                 Text(
                     text =
                         String.format(
+                            Locale.KOREA,
                             "⏱️ %d%% 완료 (%d / %d 초)",
                             (progress * 100).toInt(),
                             doneForSubject,

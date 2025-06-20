@@ -23,7 +23,6 @@ import javax.inject.Inject
 class StatViewModel
     @Inject
     constructor(private val dayGoalDao: DayGoalDao, private val dayDoneDao: DayDoneDao) : ViewModel() {
-        private val sevenDaysAgo = OffsetDateTime.now().minusDays(6).toLocalDate().toString()
         private val todayDate: String =
             OffsetDateTime.now().toLocalDate().toString() // "YYYY-MM-DD"
 
@@ -31,12 +30,12 @@ class StatViewModel
             dayGoalDao.findDayGoal(todayDate)
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-        private val tomorrowDate: String =
-            OffsetDateTime.now().plusDays(1).toLocalDate().toString() // "YYYY-MM-DD"
-
-        val tomorrowGoals: StateFlow<List<DayGoalEntity>> =
-            dayGoalDao.findDayGoal(tomorrowDate)
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        // For Test
+//        private val tomorrowDate: String =
+//            OffsetDateTime.now().plusDays(1).toLocalDate().toString() // "YYYY-MM-DD"
+//        val tomorrowGoals: StateFlow<List<DayGoalEntity>> =
+//            dayGoalDao.findDayGoal(tomorrowDate)
+//                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
         val todayDone: StateFlow<List<DayDoneEntity>> =
             dayDoneDao.getAll(todayDate)
