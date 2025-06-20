@@ -18,7 +18,7 @@ import androidx.room.PrimaryKey
     indices = [Index("planId")]
 )
 data class StudySessionEntity(
-    val planId: Long = 0,
+    val planId: Long? = null,
     val subject: String,
     val date: String,
     val startTime: String,
