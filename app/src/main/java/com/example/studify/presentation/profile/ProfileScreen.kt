@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,6 +37,8 @@ fun ProfileScreen(
     // TODO – 뷰모델 연동해 실제 사용자 정보/스위치 상태 가져오기
     var studyAlarm by remember { mutableStateOf(true) }
     val calendarLinked = true // 예시
+
+    val user = FirebaseAuth.getInstance().currentUser
 
     Scaffold(topBar = {
         TopAppBar(title = { Text("프로필") })
@@ -50,8 +53,8 @@ fun ProfileScreen(
             // --------- 사용자 ---------
             Spacer(Modifier.height(12.dp))
             ListItem(
-                headlineContent = { Text("형진 님") },
-                supportingContent = { Text("account@gmail.com") },
+                headlineContent = { Text("${user?.displayName ?: "Guest"} 님") },
+                supportingContent = { Text("${user?.email ?: "unknown@gmail.com"}") },
                 leadingContent = {
                     Icon(
                         // temp profile image

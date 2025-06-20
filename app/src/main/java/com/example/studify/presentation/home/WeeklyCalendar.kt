@@ -50,7 +50,7 @@ fun WeeklyCalendar(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 6.dp)
+                    .padding(horizontal = 12.dp)
         ) {
             days.forEach { date ->
                 DayCell(

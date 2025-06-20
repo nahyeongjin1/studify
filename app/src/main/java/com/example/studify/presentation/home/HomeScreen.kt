@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.studify.domain.model.StudySession
+import com.google.firebase.auth.FirebaseAuth
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -41,6 +42,8 @@ fun HomeScreen(
 ) {
     val ui by vm.uiState.collectAsState()
     var editing by remember { mutableStateOf<StudySession?>(null) }
+
+    val userName = FirebaseAuth.getInstance().currentUser?.displayName ?: "Guest"
 
     Scaffold(
         topBar = {
@@ -66,7 +69,7 @@ fun HomeScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "형진 님, 안녕하세요 👋",
+                            text = "$userName 님, 안녕하세요 👋",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold
                         )
