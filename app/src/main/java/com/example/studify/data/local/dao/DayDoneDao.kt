@@ -52,7 +52,7 @@ interface DayDoneDao {
     LIMIT 1
     """
     )
-    fun getMostStudiedDay(): Flow<DayMaxDone>
+    fun getMostStudiedDay(): Flow<DayMaxDone?>
 
     data class DayMaxDone(
         val date: String,
