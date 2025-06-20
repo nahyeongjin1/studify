@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studify.data.local.dao.DayDoneDao
 import com.example.studify.data.local.dao.DayGoalDao
+import com.example.studify.data.local.entity.DayDoneEntity
 import com.example.studify.data.local.entity.DayGoalEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.time.OffsetDateTime
 import javax.inject.Inject
@@ -30,23 +32,17 @@ class StatViewModel
             dayGoalDao.findDayGoal(tomorrowDate)
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-//        val weeklyGoals: StateFlow<List<SubjectGoalSummary>> =
-//            dayGoalDao.findPeriodicalGoalsGroupedBySubject(
-//                OffsetDateTime.now().plusDays(-7).toLocalDate().toString(),
-//                todayDate
-//            )
-//                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-//
-//        val monthlyGoals: StateFlow<List<SubjectGoalSummary>> =
-//            dayGoalDao.findPeriodicalGoalsGroupedBySubject(
-//                OffsetDateTime.now().plusDays(-30).toLocalDate().toString(),
-//                todayDate
-//            )
-//                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        val todayDone: StateFlow<List<DayDoneEntity>> =
+            dayDoneDao.getAll(todayDate)
+                .map { list ->
+                    list.groupBy { it.subject }
+                        .map { (subject, entries) ->
+                            DayDoneEntity(
+                                subject = subject,
+                                date = todayDate,
+                                seconds = entries.sumOf { it.seconds }
+                            )
+                        }
+                }
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     }
-
-enum class PeriodFilter {
-    ONE_DAY,
-    SEVEN_DAYS,
-    ALL
-}

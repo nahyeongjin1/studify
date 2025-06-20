@@ -25,7 +25,7 @@ class TimerViewModel
         val subjects: StateFlow<List<String>> = _subjects
 
         init {
-            val today = OffsetDateTime.now().plusDays(1).toLocalDate().toString()
+            val today = OffsetDateTime.now().toLocalDate().toString()
             Log.i("TimerVIewModel/init", "$today")
             viewModelScope.launch {
                 goalDao.findDayGoal(today).collect { goals ->
@@ -38,7 +38,7 @@ class TimerViewModel
             subject: String,
             seconds: Int
         ) {
-            val today = OffsetDateTime.now().plusDays(1).toLocalDate().toString()
+            val today = OffsetDateTime.now().toLocalDate().toString()
             doneDao.insert(DayDoneEntity(subject = subject, date = today, seconds = seconds))
             Log.i("TimerViewModel", "$subject $today $seconds")
         }

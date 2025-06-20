@@ -6,15 +6,20 @@ import androidx.room.OnConflictStrategy
 
 import androidx.room.Query
 import com.example.studify.data.local.entity.DayDoneEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DayDoneDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(entity: DayDoneEntity)
 
+    //
     @Query("SELECT * FROM day_done WHERE subject = :subject AND date = :date")
-    suspend fun get(
+    fun get(
         subject: String,
         date: String
-    ): DayDoneEntity
+    ): Flow<List<DayDoneEntity>>
+
+    @Query("SELECT * FROM day_done WHERE date = :date")
+    fun getAll(date: String): Flow<List<DayDoneEntity>>
 }

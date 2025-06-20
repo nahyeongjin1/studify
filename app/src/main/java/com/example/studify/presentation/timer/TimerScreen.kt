@@ -53,6 +53,8 @@ fun TimeScreen(
     var isRunning by remember { mutableStateOf(false) }
     var lastTick by remember { mutableStateOf(0L) }
 
+    var showTimer by remember { mutableStateOf(true) }
+
     LaunchedEffect(Unit) {
         while (true) {
             if (isRunning && lastTick > 0L) {
@@ -65,22 +67,34 @@ fun TimeScreen(
                     Log.d("타이머", "Tick: +$elapsed → 총 $timeElapsed 초")
                 }
             } else {
+                lastTick = 0L
                 delay(100L)
             }
         }
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
     ) {
-        Text("타이머", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Text(
+            text = "📘 오늘의 공부 타이머",
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
 
-        Spacer(Modifier.height(16.dp))
-
-        // 드롭다운 메뉴
+        // 드롭다운
         if (subjects.isNotEmpty()) {
-            ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded },
+                modifier = Modifier.fillMaxWidth(0.85f)
+            ) {
                 TextField(
                     value = selectedSubject,
                     onValueChange = {},
@@ -98,56 +112,69 @@ fun TimeScreen(
                                 expanded = false
                                 isRunning = false
                                 timeElapsed = 0
+                                showTimer = true
                             }
                         )
                     }
                 }
             }
         } else {
-            Text("오늘의 계획이 없습니다.", color = Color.Red)
+            Text("📭 오늘의 계획이 없습니다.", color = Color.Red)
         }
 
-        Spacer(Modifier.height(20.dp))
-        Text(String.format("%02d:%02d", timeElapsed / 60, timeElapsed % 60), fontSize = 48.sp)
+        Spacer(Modifier.height(40.dp))
 
-        Spacer(Modifier.height(20.dp))
-        Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
-            Button(onClick = {
-                if (selectedSubject.isNotBlank()) {
-                    lastTick = System.currentTimeMillis()
-                    isRunning = true
-                }
-            }) {
+        if (showTimer) {
+            Text(
+                text = String.format("%02d:%02d", timeElapsed / 60, timeElapsed % 60),
+                fontSize = 64.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        Spacer(Modifier.height(40.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(
+                onClick = {
+                    if (selectedSubject.isNotBlank()) {
+                        lastTick = System.currentTimeMillis()
+                        isRunning = true
+                        showTimer = true
+                    }
+                },
+                modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
+            ) {
                 Text("시작")
             }
 
-            Button(onClick = {
-                isRunning = false
-            }) {
-                Text("일시정지")
-            }
-            Button(onClick = {
-                if (selectedSubject.isNotBlank()) {
-                    val now = System.currentTimeMillis()
-                    val elapsed = ((now - lastTick) / 1000).toInt()
-                    if (isRunning && elapsed > 0) {
-                        timeElapsed += elapsed
-                    }
+            Button(
+                onClick = {
+                    if (selectedSubject.isNotBlank()) {
+                        val now = System.currentTimeMillis()
+                        val elapsed = ((now - lastTick) / 1000).toInt()
+                        if (isRunning && elapsed > 0) timeElapsed += elapsed
 
-                    isRunning = false
-                    lastTick = 0L
+                        isRunning = false
+                        lastTick = 0L
 
-                    val toInsert = timeElapsed
-                    if (toInsert > 0) {
-                        coroutineScope.launch {
-                            viewModel.insertDone(selectedSubject, toInsert)
-                            Log.i("종료", "$selectedSubject ${LocalDate.now()} $toInsert")
+                        val toInsert = timeElapsed
+                        if (toInsert > 0) {
+                            coroutineScope.launch {
+                                viewModel.insertDone(selectedSubject, toInsert)
+                                Log.i("종료", "$selectedSubject ${LocalDate.now()} $toInsert")
+                            }
                         }
-                    }
 
-                    timeElapsed = 0
-                }
-            }) {
+                        timeElapsed = 0
+                        showTimer = false
+                    }
+                },
+                modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
+            ) {
                 Text("종료")
             }
         }
