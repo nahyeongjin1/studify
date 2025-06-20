@@ -22,7 +22,7 @@ import com.example.studify.data.local.entity.SubjectEntity
         DayGoalEntity::class,
         DayDoneEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false,
 )
 @TypeConverters(DateConverters::class)

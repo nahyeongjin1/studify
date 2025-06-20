@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.studify.domain.model.StudySession
+import com.google.firebase.auth.FirebaseAuth
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -41,6 +42,8 @@ fun HomeScreen(
 ) {
     val ui by vm.uiState.collectAsState()
     var editing by remember { mutableStateOf<StudySession?>(null) }
+
+    val userName = FirebaseAuth.getInstance().currentUser?.displayName ?: "Guest"
 
     Scaffold(
         topBar = {
@@ -66,13 +69,13 @@ fun HomeScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "형진 님, 안녕하세요 👋",
+                            text = "$userName 님, 안녕하세요 👋",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold
                         )
                         // TODO: 오늘 공부한 시간 계산해서 표시
                         Text(
-                            text = "Studied for 2h 15m today",
+                            text = "Studied for ${ui.studiedText} today",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -113,29 +116,24 @@ fun HomeScreen(
                             .fillMaxWidth()
                 ) {
                     items(ui.sessions, key = { it.id }) { s ->
-                        SessionCard(s)
+                        SessionCard(
+                            s.toUi(),
+                            onClick = { editing = s },
+                            onDelete = { vm.delete(s.id) }
+                        )
                     }
                 }
             }
         }
-    }
-}
-
-// 임시로 생성
-// 나중에는 같은 패키지에 있는 파일에서 작업 수행해야함
-@Composable
-private fun SessionCard(s: StudySession) {
-    Surface(
-        tonalElevation = 1.dp,
-        shape = MaterialTheme.shapes.medium,
-        modifier =
-            Modifier
-                .padding(horizontal = 16.dp, vertical = 6.dp)
-                .fillMaxWidth()
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("📚 ${s.subject}", style = MaterialTheme.typography.titleMedium)
-            Text("${s.startTime} – ${s.endTime}", style = MaterialTheme.typography.bodyMedium)
+        editing?.let { sel ->
+            EditSessionSheet(
+                initial = sel,
+                onDismiss = { editing = null },
+                onSave = {
+                    vm.update(it)
+                    editing = null
+                }
+            )
         }
     }
 }
