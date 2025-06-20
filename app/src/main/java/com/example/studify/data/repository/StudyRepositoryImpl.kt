@@ -6,6 +6,7 @@ import com.example.studify.data.local.entity.StudySessionEntity
 import com.example.studify.domain.model.StudySession
 import com.example.studify.domain.repository.StudyRepository
 import com.example.studify.util.CalendarServiceHelper
+import com.example.studify.util.toOffset
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -29,13 +30,36 @@ class StudyRepositoryImpl
         }
 
         override suspend fun addSession(session: StudySession) {
+            // Room 저장
             dao.upsert(session.toEntity())
-            // TODO: Google Calendar 연동 로직 삽입 예정
+
+            // 구글 캘린더 이벤트 생성
+            GoogleSignIn.getLastSignedInAccount(ctx)?.let { account ->
+                CalendarServiceHelper.createEvent(
+                    context = ctx,
+                    account = account,
+                    title = session.subject,
+                    startTime = toOffset(session.date, session.startTime),
+                    endTime = toOffset(session.date, session.endTime)
+                )?.let { eventId ->
+                    // eventId Room에 반영
+                    updateCalendarEventId(session.id, eventId)
+                }
+            }
         }
 
         override suspend fun deleteSession(sessionId: Int) {
+            // Room 삭제 전에 eventId 획득
+            dao.getById(sessionId)?.calendarEventId?.let { id ->
+                GoogleSignIn.getLastSignedInAccount(ctx)?.also { account ->
+                    CalendarServiceHelper.deleteEvent(
+                        context = ctx,
+                        account = account,
+                        eventId = id
+                    )
+                }
+            }
             dao.deleteSessionById(sessionId)
-            // TODO: Google Calendar 이벤트 삭제도 함께
         }
 
         override suspend fun updateCalendarEventId(
@@ -54,7 +78,20 @@ class StudyRepositoryImpl
         }
 
         override suspend fun syncWithGoogleCalendar(session: StudySession) {
-            // TODO: Google Calendar 연동 로직 작성
+            val account = GoogleSignIn.getLastSignedInAccount(ctx) ?: return
+            if (session.calendarEventId == null) {
+                // 이벤트가 없으면 새로 생성
+                addSession(session.copy(id = session.id))
+            } else {
+                CalendarServiceHelper.updateEvent(
+                    context = ctx,
+                    account = account,
+                    eventId = session.calendarEventId,
+                    newTitle = session.subject,
+                    startTime = toOffset(session.date, session.startTime),
+                    endTime = toOffset(session.date, session.endTime)
+                )
+            }
         }
 
         // --- 매핑 함수들 ---
