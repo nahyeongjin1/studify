@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.studify.data.local.dao.DayDoneDao
 import com.example.studify.data.local.dao.DayGoalDao
 import com.example.studify.domain.model.StudySession
+import com.example.studify.domain.repository.PlanRepository
 import com.example.studify.domain.repository.StudyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +26,7 @@ class HomeViewModel
     @Inject
     constructor(
         private val studyRepo: StudyRepository,
+        private val planRepo: PlanRepository,
         private val dayGoalDao: DayGoalDao,
         private val dayDoneDao: DayDoneDao
     ) : ViewModel() {
@@ -32,6 +34,11 @@ class HomeViewModel
         private val selectedDate = MutableStateFlow(today)
 
         private val monday = today.with(previousOrSame(DayOfWeek.MONDAY))
+
+        val subjects: StateFlow<List<String>> =
+            planRepo.observePlansWithSubjects()
+                .map { plans -> plans.firstOrNull()?.subjects?.map { it.name } ?: emptyList() }
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
         val uiState: StateFlow<HomeUiState> =
             selectedDate

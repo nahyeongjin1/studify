@@ -13,6 +13,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,7 +33,7 @@ fun EditSessionSheet(
     vm: HomeViewModel = hiltViewModel()
 ) {
     // subject list (전체 과목) – 이후 플랜별 필터로 교체
-    val subjects by remember { mutableStateOf(listOf("국어", "영어", "수학")) } // TODO: SubjectDao로 대체
+    val subjects by vm.subjects.collectAsState()
 
     var subject by remember { mutableStateOf(initial.subject) }
     var start by remember { mutableStateOf(LocalTime.parse(initial.startTime)) }
@@ -41,24 +42,39 @@ fun EditSessionSheet(
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             // 드롭다운
-            var expanded by remember { mutableStateOf(false) }
-            ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
-                OutlinedTextField(
-                    readOnly = true,
-                    value = subject,
-                    onValueChange = {},
-                    label = { Text("과목") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-                    modifier = Modifier.menuAnchor()
-                )
-                ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    subjects.forEach { sub ->
-                        DropdownMenuItem(text = { Text(sub) }, onClick = {
-                            subject = sub
-                            expanded = false
-                        })
+            if (subjects.isNotEmpty()) {
+                var expanded by remember { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    OutlinedTextField(
+                        readOnly = true,
+                        value = subject,
+                        onValueChange = {},
+                        label = { Text("과목") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                        modifier = Modifier.menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        subjects.forEach { sub ->
+                            DropdownMenuItem(text = { Text(sub) }, onClick = {
+                                subject = sub
+                                expanded = false
+                            })
+                        }
                     }
                 }
+            } else {
+                OutlinedTextField(
+                    value = "No subjects",
+                    onValueChange = {},
+                    enabled = false,
+                    label = { Text("과목") }
+                )
             }
 
             // Time pickers
