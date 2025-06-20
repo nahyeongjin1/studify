@@ -23,19 +23,20 @@ interface DayGoalDao {
 
     @Query(
         """
-    SELECT subject, SUM(hours) as totalHours
+    SELECT date, subject, SUM(hours) as totalHours
     FROM day_goal
     WHERE date BETWEEN :startDate AND :endDate
-    GROUP BY subject
-    ORDER BY subject
-"""
+    GROUP BY date, subject
+    ORDER BY date
+    """
     )
-    fun findPeriodicalGoalsGroupedBySubject(
+    fun findPeriodicalGoals(
         startDate: String,
         endDate: String
-    ): Flow<List<SubjectGoalSummary>>
+    ): Flow<List<DailyGoalSummary>>
 
-    data class SubjectGoalSummary(
+    data class DailyGoalSummary(
+        val date: String,
         val subject: String,
         val totalHours: Int
     )
