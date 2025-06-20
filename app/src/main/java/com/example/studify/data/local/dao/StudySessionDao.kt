@@ -12,7 +12,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface StudySessionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSession(session: StudySessionEntity)
+    suspend fun upsert(session: StudySessionEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertAll(list: List<StudySessionEntity>)
 
     @Update
     suspend fun updateSession(session: StudySessionEntity)
@@ -31,4 +34,7 @@ interface StudySessionDao {
 
     @Query("DELETE FROM study_sessions WHERE id = :id")
     suspend fun deleteSessionById(id: Int)
+
+    @Query("SELECT * FROM study_sessions WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Int): StudySessionEntity?
 }
