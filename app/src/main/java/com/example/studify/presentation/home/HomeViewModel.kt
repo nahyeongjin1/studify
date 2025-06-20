@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -35,16 +36,19 @@ class HomeViewModel
         val uiState: StateFlow<HomeUiState> =
             selectedDate
                 .flatMapLatest { date ->
-                    studyRepo.getAllSessions()
-                        .map { list -> list.filter { it.date == date.toString() } }
-                        .map { filtered -> date to filtered }
-                }
-                .map { (date, list) ->
-                    HomeUiState(
-                        selectedWeekMonday = monday,
-                        selectedDate = date,
-                        sessions = list
-                    )
+                    combine(
+                        studyRepo.getAllSessions()
+                            .map { list -> list.filter { it.date == date.toString() } },
+                        dayDoneDao.getAll(date.toString())
+                    ) { sessions, doneList ->
+                        val totalSec = doneList.sumOf { it.seconds }
+                        HomeUiState(
+                            selectedWeekMonday = monday,
+                            selectedDate = date,
+                            sessions = sessions,
+                            studiedSeconds = totalSec
+                        )
+                    }
                 }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), HomeUiState(monday, today))
 
