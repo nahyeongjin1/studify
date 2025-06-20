@@ -24,4 +24,7 @@ interface PlanRepository {
     suspend fun createPlanWithLLM(subjects: List<SubjectInput>)
 
     suspend fun deletePlan(id: Long)
+    suspend fun getAllSubjects(): List<String>
+    suspend fun getGeneratedPlan(): Map<LocalDate, List<String>>
+
 }

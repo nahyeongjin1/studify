@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -57,4 +58,13 @@ class FakePlanRepository
         override suspend fun deletePlan(id: Long) {
             // TODO
         }
+
+    override suspend fun getAllSubjects(): List<String> {
+        return subjectDao.getAllSubjectNames()
     }
+
+    override suspend fun getGeneratedPlan(): Map<LocalDate, List<String>> {
+        // 테스트용 더미 데이터 반환
+        return emptyMap()
+    }
+}

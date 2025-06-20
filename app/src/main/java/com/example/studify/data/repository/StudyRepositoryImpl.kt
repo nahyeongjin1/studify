@@ -5,7 +5,7 @@ import com.example.studify.data.local.entity.StudySessionEntity
 import com.example.studify.domain.model.StudySession
 import com.example.studify.domain.repository.StudyRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,6 +22,7 @@ class StudyRepositoryImpl
             }
         }
 
+
         override suspend fun addSession(session: StudySession) {
             dao.upsert(session.toEntity())
             // TODO: Google Calendar 연동 로직 삽입 예정
@@ -32,16 +33,17 @@ class StudyRepositoryImpl
             // TODO: Google Calendar 이벤트 삭제도 함께
         }
 
+
         override suspend fun updateCalendarEventId(
             sessionId: Int,
             calendarEventId: String,
         ) {
-            val all =
-                dao.getAllSessions()
-                    .map { list -> list.find { it.id == sessionId } }
-                    .firstOrNull()
+            // dao.getAllSessions() 는 Flow<List<StudySessionEntity>> 이므로
+            // 데이터를 직접 얻으려면 first() 사용 (suspend)
+            val allSessions = dao.getAllSessions().first()
+            val targetSession = allSessions.find { it.id == sessionId }
 
-            all?.let {
+            targetSession?.let {
                 val updated = it.copy(calendarEventId = calendarEventId)
                 dao.updateSession(updated)
             }
@@ -50,6 +52,9 @@ class StudyRepositoryImpl
         override suspend fun syncWithGoogleCalendar(session: StudySession) {
             // TODO: Google Calendar 연동 로직 작성
         }
+
+
+
 
         // --- 매핑 함수들 ---
 

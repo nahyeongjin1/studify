@@ -26,6 +26,7 @@ import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 import java.time.OffsetDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -162,7 +163,20 @@ class PlanRepositoryImpl
         override suspend fun deletePlan(id: Long) {
             // no-op
         }
+
+    override suspend fun getAllSubjects(): List<String> {
+        return subjectDao.getAllSubjectNames()
     }
+
+    override suspend fun getGeneratedPlan(): Map<LocalDate, List<String>> {
+        val sessions = sessionDao.getAllSessionsOnce()
+        return sessions.groupBy(
+            keySelector = { LocalDate.parse(it.date) },
+            valueTransform = { it.subject }
+        )
+    }
+
+}
 
 private fun parseIsoDateTime(str: String): OffsetDateTime {
     // 이미 오프셋이 있으면 그대로 파싱

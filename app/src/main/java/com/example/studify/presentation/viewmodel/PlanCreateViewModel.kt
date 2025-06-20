@@ -1,5 +1,6 @@
 package com.example.studify.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studify.data.local.db.CategoryType
@@ -60,15 +61,18 @@ class PlanCreateViewModel
         fun savePlan() =
             viewModelScope.launch {
                 val inputs = _subjects.value.map { it.toDomain() }
+                Log.d("PlanDebug", "입력된 과목 수: ${inputs.size}")
                 _loading.value = true
 
                 try {
                     withContext(Dispatchers.IO) {
                         repo.createPlanWithLLM(inputs)
                     }
+                    Log.d("PlanDebug", "계획 생성 완료")
                     _event.emit(UiEvent.Success)
-                } catch (t: Throwable) {
-                    _event.emit(UiEvent.Error(t.message ?: "오류 발생"))
+                } catch (e: Exception) {
+                    Log.e("PlanDebug", "계획 생성 실패", e)
+                    _event.emit(UiEvent.Error("계획 생성 실패: ${e.localizedMessage}"))
                 } finally {
                     _loading.value = false
                 }
@@ -82,4 +86,13 @@ class PlanCreateViewModel
                 category,
                 examDate
             )
+    val scheduleByDate = MutableStateFlow<Map<LocalDate, List<String>>>(emptyMap())
+
+    fun loadGeneratedPlan() {
+        viewModelScope.launch {
+            val result = repo.getGeneratedPlan() // 예: Map<LocalDate, List<String>>
+            scheduleByDate.value = result
+        }
     }
+
+}

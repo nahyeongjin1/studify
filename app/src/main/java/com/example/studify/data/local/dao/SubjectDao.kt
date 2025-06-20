@@ -14,4 +14,9 @@ interface SubjectDao {
 
     @Query("SELECT * FROM subjects WHERE planId = :planId ORDER BY examDate")
     fun observeByPlan(planId: Long): Flow<List<SubjectEntity>>
+
+    @Query("SELECT name FROM subjects")
+    suspend fun getAllSubjectNames(): List<String>
+
+
 }

@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.example.studify.domain.model.StudySession
 
 @Entity(
     tableName = "study_sessions",
@@ -27,3 +28,18 @@ data class StudySessionEntity(
     val calendarEventId: String? = null,
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
 )
+
+fun StudySessionEntity.toDomainModel(): StudySession {
+    return StudySession(
+        id = id,
+        planId = planId,
+        subject = subject,
+        date = date,
+        startTime = startTime,
+        endTime = endTime,
+        examDate = examDate,
+        calendarEventId = calendarEventId
+    )
+}
+
+

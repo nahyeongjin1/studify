@@ -92,6 +92,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.lottie.compose)
+    implementation(libs.androidx.compiler)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
@@ -124,4 +125,6 @@ dependencies {
 
     // Google Calendar API
     implementation(libs.google.api.services.calendar)
+
+    implementation("androidx.compose.material:material-icons-extended")
 }

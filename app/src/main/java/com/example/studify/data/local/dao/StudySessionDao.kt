@@ -24,7 +24,7 @@ interface StudySessionDao {
     suspend fun deleteSession(session: StudySessionEntity)
 
     @Query("SELECT * FROM study_sessions ORDER BY date, startTime")
-    fun getAllSessions(): Flow<List<StudySessionEntity>>
+    suspend fun getAllSessionsOnce(): List<StudySessionEntity>
 
     @Query("SELECT * FROM study_sessions WHERE date = :date ORDER BY startTime")
     fun getSessionsByDate(date: String): Flow<List<StudySessionEntity>>
@@ -34,4 +34,10 @@ interface StudySessionDao {
 
     @Query("DELETE FROM study_sessions WHERE id = :id")
     suspend fun deleteSessionById(id: Int)
+
+    @Query("SELECT * FROM study_sessions ORDER BY date, startTime")
+    fun getAllSessions(): Flow<List<StudySessionEntity>>
+
+
+
 }

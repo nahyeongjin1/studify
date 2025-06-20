@@ -24,12 +24,12 @@ class OnboardingPrefs
 
         val seenFlow: Flow<Boolean> =
             ctx.dataStore.data.map { prefs ->
-                prefs[Keys.SEEN] == true
+                prefs[Keys.SEEN] == false
             }
 
         suspend fun setSeen() {
             ctx.dataStore.edit { prefs ->
-                prefs[Keys.SEEN] = true
+                prefs[Keys.SEEN] = false
             }
         }
     }
