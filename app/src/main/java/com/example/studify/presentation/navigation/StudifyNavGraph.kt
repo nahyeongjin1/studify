@@ -7,10 +7,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.studify.presentation.home.HomeRoute
 import com.example.studify.presentation.login.CalendarSyncScreen
 import com.example.studify.presentation.login.LoginScreen
 import com.example.studify.presentation.onboarding.OnboardingScreen
 import com.example.studify.presentation.plan.PlanScreen
+import com.example.studify.presentation.profile.ProfileScreen
 import com.example.studify.presentation.splash.SplashRoute
 import com.example.studify.presentation.stat.StatScreen
 import com.example.studify.presentation.timer.TimeScreen
@@ -47,7 +49,7 @@ fun StudifyNavGraph(
             CalendarSyncScreen(navController)
         }
         composable(route = Screen.Home.route) {
-            Text("Home Screen")
+            HomeRoute(navController)
         }
         composable(route = Screen.Plan.route) {
             PlanScreen(navController)
@@ -59,7 +61,7 @@ fun StudifyNavGraph(
             StatScreen(navController)
         }
         composable(route = Screen.Profile.route) {
-            Text("Profile Screen")
+            ProfileScreen()
         }
     }
 }
