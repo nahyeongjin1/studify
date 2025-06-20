@@ -2,6 +2,7 @@ package com.example.studify.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.studify.domain.model.StudySession
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -50,4 +51,14 @@ class HomeViewModel
         fun selectDate(date: LocalDate) {
             selectedDate.value = date
         }
+
+        fun delete(id: Int) =
+            viewModelScope.launch {
+                repo.delete(id)
+            }
+
+        fun update(session: StudySession) =
+            viewModelScope.launch {
+                repo.updateSession(session)
+            }
     }

@@ -40,4 +40,12 @@ class FakeHomeRepository
                 )
             store.value = dummy
         }
+
+        suspend fun updateSession(updated: StudySession) {
+            store.value = store.value.map { if (it.id == updated.id) updated else it }
+        }
+
+        suspend fun delete(id: Int) {
+            store.value = store.value.filterNot { it.id == id }
+        }
     }
