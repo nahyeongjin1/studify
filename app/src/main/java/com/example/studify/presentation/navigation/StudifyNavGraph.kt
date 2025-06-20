@@ -13,6 +13,7 @@ import com.example.studify.presentation.onboarding.OnboardingScreen
 import com.example.studify.presentation.plan.PlanScreen
 import com.example.studify.presentation.splash.SplashRoute
 import com.example.studify.presentation.stat.StatScreen
+import com.example.studify.presentation.timer.TimeScreen
 import com.example.studify.presentation.viewmodel.OnboardingViewModel
 
 @Composable
@@ -52,7 +53,7 @@ fun StudifyNavGraph(
             PlanScreen(navController)
         }
         composable(route = Screen.Timer.route) {
-            Text("Timer Screen")
+            TimeScreen(navController)
         }
         composable(route = Screen.Stat.route) {
             StatScreen(navController)

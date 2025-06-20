@@ -2,6 +2,7 @@ package com.example.studify.di
 
 import android.app.Application
 import androidx.room.Room
+import com.example.studify.data.local.dao.DayDoneDao
 import com.example.studify.data.local.dao.DayGoalDao
 import com.example.studify.data.local.dao.PlanDao
 import com.example.studify.data.local.dao.StudySessionDao
@@ -59,5 +60,8 @@ abstract class AppModule {
 
         @Provides
         fun provideDayGoalDao(db: StudifyDatabase): DayGoalDao = db.dayGoalDao()
+
+        @Provides
+        fun provideDayDoneDao(db: StudifyDatabase): DayDoneDao = db.dayDoneDao()
     }
 }
