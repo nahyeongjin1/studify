@@ -85,20 +85,15 @@ class StatViewModel
                 }
             }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-        private val _mostStudiedDay = MutableStateFlow<DayDoneDao.DayMaxDone?>(null)
-        val mostStudiedDay: StateFlow<DayDoneDao.DayMaxDone?> = _mostStudiedDay
+        val mostStudiedDay: StateFlow<DayDoneDao.DayMaxDone?> =
+            dayDoneDao.getMostStudiedDay()
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
         private val _streakCount = MutableStateFlow(0)
         val streakCount: StateFlow<Int> = _streakCount
 
         init {
             viewModelScope.launch {
-                try {
-                    _mostStudiedDay.value = dayDoneDao.getMostStudiedDay()
-                } catch (e: Exception) {
-                    Log.e("StatViewModel", "getMostStudiedDay failed: ${e.message}")
-                }
-
                 val studyDates = dayDoneDao.getStudyDatesDesc().map { LocalDate.parse(it) }
                 val today = LocalDate.now()
                 var streak = 0
