@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,6 +45,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -274,15 +276,28 @@ private fun SubjectCard(
         } else {
             MaterialTheme.colorScheme.secondary
         }
-    Row(modifier = modifier) {
-        Box(
+    val stripe = 8.dp
+    val innerPadding = 8.dp
+
+    Row(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = 96.dp)
+                .drawBehind {
+                    drawRoundRect(
+                        color = categoryColor,
+                        size = Size(stripe.toPx(), size.height),
+                        cornerRadius = CornerRadius(12.dp.toPx())
+                    )
+                }.padding(start = stripe + innerPadding),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
             modifier =
                 Modifier
-                    .width(4.dp)
-                    .fillMaxHeight()
-                    .background(categoryColor)
-        )
-        Column(modifier = Modifier.padding(16.dp)) {
+                    .padding(vertical = 8.dp)
+        ) {
             Text(subject.name, style = MaterialTheme.typography.titleMedium)
             Text("학점 ${subject.credits} · 중요도 ${subject.importance}")
             Text("${subject.category.label} / 시험 ${subject.examDate}")
