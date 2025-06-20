@@ -23,7 +23,7 @@ fun StatScreen(
     navController: NavHostController,
     viewModel: StatViewModel = hiltViewModel()
 ) {
-    val goals by viewModel.todayGoals.collectAsState()
+    val goals by viewModel.tomorrowGoals.collectAsState()
 //    val done by viewModel.todayDone.collectAsState()
 
     // 오늘 목표 대비 달성률

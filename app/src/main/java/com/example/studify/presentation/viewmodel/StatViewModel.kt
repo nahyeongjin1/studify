@@ -2,6 +2,7 @@ package com.example.studify.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.studify.data.local.dao.DayDoneDao
 import com.example.studify.data.local.dao.DayGoalDao
 import com.example.studify.data.local.dao.DayGoalDao.SubjectGoalSummary
 import com.example.studify.data.local.entity.DayGoalEntity
@@ -15,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StatViewModel
     @Inject
-    constructor(private val dayGoalDao: DayGoalDao) : ViewModel() {
+    constructor(private val dayGoalDao: DayGoalDao, private val dayDoneDao: DayDoneDao) : ViewModel() {
         private val todayDate: String =
             OffsetDateTime.now().toLocalDate().toString() // "YYYY-MM-DD"
 
@@ -32,7 +33,7 @@ class StatViewModel
 
         // 타이머로 측정한 오늘 공부량
 //    val todayDone: StateFlow<List<DayDoneEntity>> =
-//        dayDoneDao.findDayDone(todayDate)
+//        dayDoneDao.get(todayDate)
 //            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
         val weeklyGoals: StateFlow<List<SubjectGoalSummary>> =
