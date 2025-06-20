@@ -66,4 +66,37 @@ object CalendarServiceHelper {
                 .items
         events.forEach { service.events().delete("primary", it.id).execute() }
     }
+
+    // 기존 이벤트 수정
+    fun updateEvent(
+        context: Context,
+        account: GoogleSignInAccount,
+        eventId: String,
+        newTitle: String,
+        startTime: OffsetDateTime,
+        endTime: OffsetDateTime
+    ): Boolean =
+        runCatching {
+            val service = getCalendarService(context, account)
+            val event = service.events().get("primary", eventId).execute() ?: return false
+            event.apply {
+                summary = "[Studify] $newTitle"
+                start = EventDateTime().setDateTime(DateTime(startTime.toInstant().toEpochMilli()))
+                end = EventDateTime().setDateTime(DateTime(endTime.toInstant().toEpochMilli()))
+            }
+            service.events().update("primary", eventId, event).execute()
+            true
+        }.getOrElse { false }
+
+    // 이벤트 삭제
+    fun deleteEvent(
+        context: Context,
+        account: GoogleSignInAccount,
+        eventId: String
+    ): Boolean =
+        runCatching {
+            val service = getCalendarService(context, account)
+            service.events().delete("primary", eventId).execute()
+            true
+        }.getOrElse { false }
 }

@@ -2,7 +2,10 @@ package com.example.studify.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.studify.data.local.dao.DayDoneDao
+import com.example.studify.data.local.dao.DayGoalDao
 import com.example.studify.domain.model.StudySession
+import com.example.studify.domain.repository.StudyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,17 +23,21 @@ import javax.inject.Inject
 class HomeViewModel
     @Inject
     constructor(
-        private val repo: FakeHomeRepository
+        private val studyRepo: StudyRepository,
+        private val dayGoalDao: DayGoalDao,
+        private val dayDoneDao: DayDoneDao
     ) : ViewModel() {
         private val today = LocalDate.now()
-        private val monday = today.with(previousOrSame(DayOfWeek.MONDAY))
-
         private val selectedDate = MutableStateFlow(today)
+
+        private val monday = today.with(previousOrSame(DayOfWeek.MONDAY))
 
         val uiState: StateFlow<HomeUiState> =
             selectedDate
                 .flatMapLatest { date ->
-                    repo.observeSessions(date).map { list -> date to list }
+                    studyRepo.getAllSessions()
+                        .map { list -> list.filter { it.date == date.toString() } }
+                        .map { filtered -> date to filtered }
                 }
                 .map { (date, list) ->
                     HomeUiState(
@@ -41,24 +48,17 @@ class HomeViewModel
                 }
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), HomeUiState(monday, today))
 
-        init {
-            // 더미 시드
-            viewModelScope.launch {
-                repo.seedIfEmpty(today)
-            }
-        }
-
         fun selectDate(date: LocalDate) {
             selectedDate.value = date
         }
 
         fun delete(id: Int) =
             viewModelScope.launch {
-                repo.delete(id)
+                studyRepo.deleteSession(id)
             }
 
         fun update(session: StudySession) =
             viewModelScope.launch {
-                repo.updateSession(session)
+                studyRepo.updateSession(session)
             }
     }

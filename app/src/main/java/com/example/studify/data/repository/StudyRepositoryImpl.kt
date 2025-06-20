@@ -1,12 +1,17 @@
 package com.example.studify.data.repository
 
+import android.content.Context
 import com.example.studify.data.local.dao.StudySessionDao
 import com.example.studify.data.local.entity.StudySessionEntity
 import com.example.studify.domain.model.StudySession
 import com.example.studify.domain.repository.StudyRepository
+import com.example.studify.util.CalendarServiceHelper
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import java.time.OffsetDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,6 +20,7 @@ class StudyRepositoryImpl
     @Inject
     constructor(
         private val dao: StudySessionDao,
+        @ApplicationContext private val ctx: Context
     ) : StudyRepository {
         override fun getAllSessions(): Flow<List<StudySession>> {
             return dao.getAllSessions().map { list ->
@@ -74,4 +80,21 @@ class StudyRepositoryImpl
                 examDate = examDate,
                 calendarEventId = calendarEventId,
             )
+
+        override suspend fun updateSession(session: StudySession) {
+            dao.updateSession(session.toEntity())
+
+            // 기존에 eventId가 있으면 수정, 없으면 신규 생성
+            session.calendarEventId?.let { id ->
+                val account = GoogleSignIn.getLastSignedInAccount(ctx) ?: return
+                CalendarServiceHelper.updateEvent(
+                    context = ctx,
+                    account = account,
+                    eventId = id,
+                    newTitle = session.subject,
+                    startTime = OffsetDateTime.parse("${session.date}T${session.startTime}+09:00"),
+                    endTime = OffsetDateTime.parse("${session.date}T${session.endTime}+09:00")
+                )
+            }
+        }
     }

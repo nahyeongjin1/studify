@@ -36,4 +36,6 @@ interface StudyRepository {
      * 이미 존재하는 세션을 Google Calendar에 동기화 (수동 동기화)
      */
     suspend fun syncWithGoogleCalendar(session: StudySession)
+
+    suspend fun updateSession(session: StudySession)
 }
